@@ -1,0 +1,70 @@
+####################
+## Managed by Salt
+#####################
+
+[[local|localrc]]
+ENABLED_SERVICES={{ data.enabled_services or "" }}
+DEST=${STACK_DEST:-{{ "/opt/stack" if not dir.dest else dir.dest }}}
+GIT_BASE=${GIT_BASE:-{{ "https://git.openstack.org" if not data.git_base else data.git_base }}}
+GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not data.git_branch else data.git_branch }}}
+RECLONE={{ data.reclone or "no" }}
+
+SERVICE_HOST=${HOST_IP:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
+ODL_MGR_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.odl_mgr_ip else data.odl_mgr_ip }}}
+HOST_NAME={{ grains.host if not data.host_name else data.host_name }}
+
+VERBOSE={{ data.verbose or "" }}
+ENABLE_DEBUG_LOG_LEVEL={{ data.enable_debug_log_level or "" }}
+ENABLE_VERBOSE_LOG_LEVEL={{ data.enable_verbose_log_level or "" }}
+
+# If the ``*_PASSWORD`` variables are not set here you will be prompted to enter ..
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ data.admin_password or data.password or "nomoresecret" }}}
+SERVICE_PASSWORD=${ADMIN_PASSWORD}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ data.database_password or data.password or "stackdb" }}}
+RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ data.rabbit_password or data.password or "stackqueue" }}}
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+SERVICE_TOKEN=${SERVICE_TOKEN:-{{ data.service_token or data.password or "nomoresecret" }}}
+
+# ``HOST_IP`` and ``HOST_IPV6`` should be set manually .. Neither is set by default.
+HOST_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
+HOST_IPV6=${HOST_IPV6:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
+
+# Logging
+# -------
+LOGFILE={{ dir.log or "$DEST/logs" }}/{{ data.logfile }}
+
+# Old log files are automatically removed after 7 days to keep things neat.  Change
+# the number of days by setting ``LOGDAYS``.
+LOGDAYS={{ data.logdays or "2" }}
+
+# Nova logs will be colorized if ``SYSLOG`` is not set; turn this off by setting false.
+LOG_COLOR={{ data.log_color or "True" }}
+
+# Using branches
+# --------------
+CINDER_BRANCH=${CINDER_BRANCH:-{{ data.cinder_branch or data.git_branch }}}
+GLANCE_BRANCH=${GLANCE_BRANCH:-{{ data.glance_branch or data.git_branch }}}
+HORIZON_BRANCH=${HORIZON_BRANCH:-{{ data.horizon_branch or data.git_branch }}}
+KEYSTONE_BRANCH=${KEYSTONE_BRANCH:-{{ data.keystone_branch or data.git_branch }}}
+KEYSTONECLIENT_BRANCH=${KEYSTONECLIENT_BRANCH:-{{ data.keystoneclient_branch or data.git_branch }}}
+NOVA_BRANCH=${NOVA_BRANCH:-{{ data.nova_branch or data.git_branch }}}
+NOVACLIENT_BRANCH=${NOVACLIENT_BRANCH:-{{ data.novaclient_branch or data.git_branch }}}
+NEUTRON_BRANCH=${NEUTRON_BRANCH:-{{ data.neutron_branch or data.git_branch }}}
+SWIFT_BRANCH=${SWIFT_BRANCH:-{{ data.swift_branch or data.git_branch }}}
+
+# Swift
+# -----
+SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5
+# For development purposes the default of 3 replicas is usually not required.
+SWIFT_REPLICAS=1
+# The data for Swift is stored by default in (``$DEST/data/swift``),
+# or (``$DATA_DIR/swift``) if ``DATA_DIR`` has been set, and can be
+# moved by setting ``SWIFT_DATA_DIR``. The directory will be created
+# if it does not exist.
+SWIFT_DATA_DIR=$DEST/data
+
+# Used by openrc
+#---------------
+# Ref: https://docs.openstack.org/devstack/latest/configuration.html#local-conf
+
+OS_PASSWORD=${OS_PASSWORD:{{ data.os_password or "$ADMIN_PASSWORD" }}}

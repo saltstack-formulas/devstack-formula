@@ -3,11 +3,20 @@
 
 {## Start with defaults #}
 {% import_yaml 'devstack/defaults.yaml' as defaults %}
+{% import_yaml 'devstack/osfamilymap.yaml' as osfamilymap %}
+{% import_yaml 'devstack/osmap.yaml' as osmap %}
 
-{## Merge pillars ##}
-{% set devstack = salt['pillar.get'](
-        'devstack',
-        default=defaults.devstack,
-        merge=True
-    )
-%}
+{% set devstack = salt['grains.filter_by'](
+    defaults,
+    merge=salt['grains.filter_by'](
+        osfamilymap,
+        grain='os_family',
+        merge=salt['grains.filter_by'](
+            osmap,
+            merge=salt['pillar.get']('devstack', {}),
+        ),
+        base='devstack',
+    ),
+    base='devstack',
+) %}
+

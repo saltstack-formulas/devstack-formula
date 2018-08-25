@@ -1,0 +1,12 @@
+
+RedHat:
+  pkgs:
+    - git
+    - redhat-lsb-core
+  pips:
+    - pysaml2
+
+Debian:
+  pkgs:
+    - git
+    - bridge-utils
