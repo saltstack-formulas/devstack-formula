@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+# vim: ft=jinja
+
+{## Start with defaults #}
+{% import_yaml 'devstack/defaults.yaml' as defaults %}
+
+{## Merge pillars ##}
+{% set devstack = salt['pillar.get'](
+        'devstack',
+        default=defaults.devstack,
+        merge=True
+    )
+%}

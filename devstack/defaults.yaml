@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+devstack:
+  install_from: repo
+  user: stack
+  mode: '0644'
+  password: devstack
+  dir:
+    base: /home/stack
+    log: /tmp/devstack
+    config: /home/stack/localrc
+  repo:
+    branch: master
+    url: https://git.openstack.org/openstack-dev/devstack
+  conf:
+    git_base: 'git://git.openstack.org'
+    host_ip: 127.0.0.1
+    service_host: 127.0.0.1
+    service_password: devstack
+    admin_password: devstack
+    service_token: devstack
+    database_password: root
+    rabbit_password: password
+    enable_httpd_mod_wsgi_services: false
+    keystone_use_mod_wsgi: false
+    logfile: stack.sh.log
+    verbose: true
+    enable_debug_log_level: true
+    enable_verbose_log_level: true
+    reclone: no
+

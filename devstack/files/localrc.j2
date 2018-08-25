@@ -1,0 +1,28 @@
+##############################
+# Managed by salt
+##############################
+HOST_IP={{ host_ip or '127.0.0.1' }}
+SERVICE_HOST={{ host_ip or '127.0.0.1' }}
+SERVICE_PASSWORD={{ service_password or 'devstack' }}
+ADMIN_PASSWORD={{ admin_password or 'devstack' }}
+SERVICE_TOKEN={{ service_token or 'devstack' }}
+DATABASE_PASSWORD={{ database_password }}
+RABBIT_PASSWORD={{ rabbit_password or 'devstack' }}
+#ENABLE_HTTPD_MOD_WSGI_SERVICES=True
+#KEYSTONE_USE_MOD_WSGI=True
+
+# Logging
+LOGFILE={{ logfile }}
+VERBOSE={{ verbose or 'False' }}
+ENABLE_DEBUG_LOG_LEVEL={{ enable_debug_log_level or 'False' }}
+ENABLE_VERBOSE_LOG_LEVEL={{ enable_verbose_log_level or 'False' }}
+GIT_BASE={{ git_base }}
+
+GLANCE_BRANCH={{ branch }}
+HORIZON_BRANCH={{ branch }}
+KEYSTONE_BRANCH={{ branch }}
+NOVA_BRANCH={{ branch }}
+GLANCE_BRANCH={{ branch }}
+QUANTUM_BRANCH={{ branch }}
+
+RECLONE={{ reclone or 'yes' }}

@@ -1,0 +1,40 @@
+secret:
+  username: stack
+  password: secret
+  dir:
+    base: /opt/stack
+    log: /tmp/devstack
+    config: /opt/stack/localrc
+  repo:
+    branch: stable/pike
+    url: https://git.openstack.org/openstack-dev/devstack
+  conf:
+    git_base: 'git://git.openstack.org'
+    #host_ip: 192.168.1.10
+    #service_host: 192.168.1.10
+    service_password: foggydev
+    admin_password: foggydev
+    service_token: foggydev
+    database_password: foggydev
+    rabbit_password: foggydev
+    #enable_httpd_mod_wsgi_services: true
+    #keystone_use_mod_wsgi: true
+    #logfile: stack.sh.log
+    #verbose: true
+    #enable_debug_log_level: true
+    #enable_verbose_log_level: true
+    reclone: yes
+
+  #todo: future extend config state
+  append:
+    - GLANCE_BRANCH=stable/pike
+    - HORIZON_BRANCH=stable/pike
+    - KEYSTONE_BRANCH=stable/pike
+    - NOVA_BRANCH=stable/pike
+    - GLANCE_BRANCH=stable/pike
+    - QUANTUM_BRANCH=stable/pike
+    - USE_BARBICAN=True
+    - enable_plugin networking-sfc git://git.openstack.org/openstack/networking-sfc
+    - enable_plugin barbican git://git.openstack.org/openstack/barbican
+    - enable_plugin mistral git://git.openstack.org/openstack/mistral
+    - enable_plugin tacker git://git.openstack.org/openstack/tacker
