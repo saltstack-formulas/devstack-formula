@@ -2,15 +2,21 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
-openstack-devstack unstack and clean:
+openstack-devstack unstack:
   cmd.run:
-    - names:
-      - 'bash {{ devstack.dir.base }}/unstack.sh'
-      - 'bash {{ devstack.dir.base }}/clean.sh'
+    - name: {{ devstack.dir.base }}/unstack.sh | true
     - runas: {{ devstack.user }}
     - onlyif: test -f {{ devstack.dir.base }}/unstack.sh && getent passwd {{ devstack.user }}
     - require_in:
-      - cmd: openstack-devstack cleandown
+      - user: openstack-devstack cleandown
+
+openstack-devstack unstack and clean:
+  cmd.run:
+    - name: 'sudo bash {{ devstack.dir.base }}/clean.sh'
+    - runas: {{ devstack.user }}
+    - onlyif: test -f {{ devstack.dir.base }}/unstack.sh && getent passwd {{ devstack.user }}
+    - require_in:
+      - user: openstack-devstack cleandown
 
 openstack-devstack cleandown:
   user.absent:

@@ -2,7 +2,7 @@
 devstack-formula
 ================
 
-A SaltStack formula to deploy local OpenStack cloud on GNU/Linux from git source trees.
+A SaltStack formula to deploy local OpenStack cloud (aka Devstack) on GNU/Linux from git source trees.
 
 **NOTE**
 

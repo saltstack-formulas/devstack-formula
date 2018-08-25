@@ -21,11 +21,11 @@ openstack-devstack ensure user and group exist:
     - require:
       - group: openstack-devstack ensure user and group exist
     - require_in:
-      - file: openstack-devstack deploy
-      - git: openstack-devstack git cloned
+      - file: openstack-devstack config
+      - git: openstack-devstack git cloned and sudo access
     - unless: getent passwd {{ devstack.user }}
 
-openstack-devstack git cloned:
+openstack-devstack git cloned and sudo access:
   git.latest:
     - name: https://github.com/openstack-dev/devstack.git
     - rev: {{ devstack.repo.branch }}
@@ -45,9 +45,11 @@ openstack-devstack git cloned:
     - context:
       username: {{ devstack.user }}
     - require:
-      - git: openstack-devstack git cloned
+      - git: openstack-devstack git cloned and sudo access
+    - require_in:
+      - file: openstack-devstack config
 
-openstack-devstack deploy:
+openstack-devstack config:
   file.managed:
     - name: {{ devstack.dir.base }}/localrc
     - source: salt://devstack/files/localrc.j2
@@ -74,7 +76,17 @@ openstack-devstack deploy:
         enable_verbose_log_level: {{ devstack.conf.enable_verbose_log_level }}
         reclone: {{ devstack.conf.reclone }}
   cmd.run:
-    - name: bash {{ devstack.dir.base }}/stack.sh
+    - name: {{ devstack.dir.base }}/tools/create-stack-user.sh
+    - runas: root
+    - env:
+      - STACK_USER: {{ devstack.user }}
+      - HOST_IP: {{ devstack.conf.host_ip }}
+    - onlyif: test -x {{ devstack.dir.base }}/tools/create-stack-user.sh
+
+openstack-devstack stack:
+  cmd.run:
+    - name: 'sudo bash {{ devstack.dir.base }}/stack.sh'
     - runas: {{ devstack.user }}
     - require:
-      - file: openstack-devstack deploy
+      - file: openstack-devstack config
+      - cmd: openstack-devstack config
