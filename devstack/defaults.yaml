@@ -1,31 +1,47 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 devstack:
-  install_from: repo
-  user: stack
   mode: '0644'
-  password: devstack
+  pkgs: ['git','bridge-utils',]
+  pips: []
   dir:
-    base: /home/stack
+    dest: /opt/stack
+    home: /home
     log: /tmp/devstack
-    config: /home/stack/localrc
-  repo:
-    branch: master
-    url: https://git.openstack.org/openstack-dev/devstack
-  conf:
-    git_base: 'git://git.openstack.org'
-    host_ip: 127.0.0.1
-    service_host: 127.0.0.1
-    service_password: devstack
-    admin_password: devstack
-    service_token: devstack
-    database_password: root
-    rabbit_password: password
+  local:
+    enabled_services:
+    username: stack
+    password: devstack
+    sudoers_file: /etc/sudoers.d/50_devstack_user
+    git_base: 'https://git.openstack.org'
+    git_branch: master
+    git_url: 'https://git.openstack.org/openstack-dev/devstack'
+    reclone: no
+    host_name: {{ grains.host }}
     enable_httpd_mod_wsgi_services: false
     keystone_use_mod_wsgi: false
     logfile: stack.sh.log
-    verbose: true
-    enable_debug_log_level: true
-    enable_verbose_log_level: true
-    reclone: no
-
+    logdays:
+    log_color:
+    verbose:
+    enable_debug_log_level:
+    enable_verbose_log_level:
+    admin_password:
+    database_password:
+    rabbit_password:
+    service_token:
+    cinder_branch:
+    horizon_branch:
+    keystone_branch:
+    keystoneclient_branch:
+    nova_branch:
+    novaclient_branch:
+    neutron_branch:
+    swift_branch:
+    glance_branch:
+    ### used by devstack openrc ###
+    os_password: devstack
+    host_ip:
+    host_ipv6:
+    service_host:
+    odl_mgr_ip:

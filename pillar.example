@@ -1,40 +1,33 @@
-secret:
-  username: stack
-  password: secret
-  dir:
-    base: /opt/stack
-    log: /tmp/devstack
-    config: /opt/stack/localrc
-  repo:
-    branch: stable/pike
-    url: https://git.openstack.org/openstack-dev/devstack
-  conf:
-    git_base: 'git://git.openstack.org'
-    #host_ip: 192.168.1.10
-    #service_host: 192.168.1.10
-    service_password: foggydev
-    admin_password: foggydev
-    service_token: foggydev
-    database_password: foggydev
-    rabbit_password: foggydev
-    #enable_httpd_mod_wsgi_services: true
-    #keystone_use_mod_wsgi: true
-    #logfile: stack.sh.log
-    #verbose: true
-    #enable_debug_log_level: true
-    #enable_verbose_log_level: true
-    reclone: yes
+#Minimal pillars might be
+devstack:
+  local:
+    username: stack
+    password: devstack
+    enabled_services: 'mysql,key'     #needs quotes
+    ### used by devstack openrc
+    os_password: devstack
 
-  #todo: future extend config state
-  append:
-    - GLANCE_BRANCH=stable/pike
-    - HORIZON_BRANCH=stable/pike
-    - KEYSTONE_BRANCH=stable/pike
-    - NOVA_BRANCH=stable/pike
-    - GLANCE_BRANCH=stable/pike
-    - QUANTUM_BRANCH=stable/pike
-    - USE_BARBICAN=True
-    - enable_plugin networking-sfc git://git.openstack.org/openstack/networking-sfc
-    - enable_plugin barbican git://git.openstack.org/openstack/barbican
-    - enable_plugin mistral git://git.openstack.org/openstack/mistral
-    - enable_plugin tacker git://git.openstack.org/openstack/tacker
+#Other custom pillars include ..
+    reclone: yes
+    git_base: 'https://git.example.org'
+    git_branch: stable/pike
+    git_url: 'https://git.example.org/openstack-dev/devstack'
+    host_name: host1.example.com
+    enable_httpd_mod_wsgi_services: True
+    keystone_use_mod_wsgi: True
+    logfile: really_long_filename_stack.sh.log
+    logdays: 1000000
+    verbose: True
+    enable_debug_log_level: True
+    ### used by devstack openrc ###
+    os_password: soggydew
+    service_host: 127.0.0.1
+    host_ip: 127.0.0.1
+    host_ipv6: 127.0.0.1
+    odl_mgr_ip: 127.0.0.1
+
+ dir:
+    dest: /opt/home/stack         # Setting /home/<user>/ triggers stack.sh failure (0700 permissions)
+    log: /tmp/stackyyy            # Setting /tmp/ triggers unstack.sh ('rm -f /tmp') bug
+    config: /opt/home/stack/local.conf
+    sudoers_file: /etc/sudoers.d/50_devstack_user

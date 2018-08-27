@@ -4,38 +4,46 @@
 
 openstack-devstack ensure package dependencies:
   pkg.installed:
-    - name: git
+    - names:
+      {%- for pkg in devstack.pkgs %}
+      - {{ pkg }}
+      {%- endfor %}
 
 openstack-devstack ensure user and group exist:
   group.present:
-    - name: {{ devstack.user }}
-    - unless: getent group {{ devstack.user }}
+    - name: {{ devstack.local.username }}
+    - unless: getent group {{ devstack.local.username }}
   user.present:
-    - name: {{ devstack.user }}
+    - name: {{ devstack.local.username }}
     - fullname: DevStack User
     - shell: /bin/bash
-    - home: {{ devstack.dir.base }}
+    - home: {{ devstack.dir.dest }}
     - createhome: True
     - groups:
-      - {{ devstack.user }}
+      - {{ devstack.local.username }}
     - require:
       - group: openstack-devstack ensure user and group exist
     - require_in:
-      - file: openstack-devstack config
+      - file: openstack-devstack ensure user and group exist
+      - file: openstack-devstack configure local_conf and run stack
       - git: openstack-devstack git cloned and sudo access
-    - unless: getent passwd {{ devstack.user }}
+    - unless: getent passwd {{ devstack.local.username }}
+  file.directory:
+    - name: {{ devstack.dir.dest }}
+    - dir_mode: '0755'
+    - force: True
 
 openstack-devstack git cloned and sudo access:
   git.latest:
-    - name: https://github.com/openstack-dev/devstack.git
-    - rev: {{ devstack.repo.branch }}
-    - target: {{ devstack.dir.base }}
-    - user: {{ devstack.user }}
+    - name: {{ devstack.local.git_url }}
+    - rev: {{ devstack.local.git_branch }}
+    - target: {{ devstack.dir.dest }}
+    - user: {{ devstack.local.username }}
     - force_clone: True
     - require:
       - pkg: openstack-devstack ensure package dependencies
   file.managed:
-    - name: /etc/sudoers.d/50_devstack
+    - name: {{ devstack.local.sudoers_file }}
     - source: salt://devstack/files/devstack.sudoers
     - mode: 440
     - runas: root
@@ -43,50 +51,31 @@ openstack-devstack git cloned and sudo access:
     - makedirs: True
     - template: jinja
     - context:
-      username: {{ devstack.user }}
+      devusername: {{ devstack.local.username or 'stack' }}
     - require:
       - git: openstack-devstack git cloned and sudo access
     - require_in:
-      - file: openstack-devstack config
+      - file: openstack-devstack configure local_conf and run stack
 
-openstack-devstack config:
+openstack-devstack configure local_conf and run stack:
   file.managed:
-    - name: {{ devstack.dir.base }}/localrc
-    - source: salt://devstack/files/localrc.j2
-    - user: {{ devstack.user }}
-    - group: {{ devstack.user }}
+    - name: {{ devstack.dir.dest }}/local.conf
+    - source: salt://devstack/files/local.conf.j2
+    - user: {{ devstack.local.username }}
+    - group: {{ devstack.local.username }}
     - makedirs: True
     - mode: {{ devstack.mode }}
     - template: jinja
     - context:
-        git_base: {{ devstack.conf.git_base }}
-        branch: {{ devstack.repo.branch }}
-        host_ip: {{ devstack.conf.host_ip }}
-        service_host: {{ devstack.conf.service_host }}
-        service_password: {{ devstack.conf.service_password }}
-        admin_password: {{ devstack.conf.admin_password }}
-        service_token: {{ devstack.conf.service_token }}
-        database_password: {{ devstack.conf.database_password }}
-        rabbit_password: {{ devstack.conf.rabbit_password }}
-        enable_httpd_mod_wsgi_services: {{ devstack.conf.enable_httpd_mod_wsgi_services }}
-        keystone_use_mod_wsgi: {{ devstack.conf.keystone_use_mod_wsgi }}
-        logfile: {{ devstack.dir.log }}/{{ devstack.conf.logfile }}
-        verbose: {{ devstack.conf.verbose }}
-        enable_debug_log_level: {{ devstack.conf.enable_debug_log_level }}
-        enable_verbose_log_level: {{ devstack.conf.enable_verbose_log_level }}
-        reclone: {{ devstack.conf.reclone }}
+        data: {{ devstack.local|json }}
+        dir:  {{ devstack.dir|json }}
   cmd.run:
-    - name: {{ devstack.dir.base }}/tools/create-stack-user.sh
-    - runas: root
+    - names:
+      - chown -R {{ devstack.local.username }}:{{ devstack.local.username }} {{ devstack.dir.dest }}
+      - {{ devstack.dir.dest }}/stack.sh
     - env:
-      - STACK_USER: {{ devstack.user }}
-      - HOST_IP: {{ devstack.conf.host_ip }}
-    - onlyif: test -x {{ devstack.dir.base }}/tools/create-stack-user.sh
-
-openstack-devstack stack:
-  cmd.run:
-    - name: 'sudo bash {{ devstack.dir.base }}/stack.sh'
-    - runas: {{ devstack.user }}
+      - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
+      - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}
+    - runas: {{ devstack.local.username }}
     - require:
-      - file: openstack-devstack config
-      - cmd: openstack-devstack config
+      - file: openstack-devstack configure local_conf and run stack
