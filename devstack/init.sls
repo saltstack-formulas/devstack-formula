@@ -12,7 +12,6 @@ openstack-devstack ensure package dependencies:
 openstack-devstack ensure user and group exist:
   group.present:
     - name: {{ devstack.local.username }}
-    - unless: getent group {{ devstack.local.username }}
   user.present:
     - name: {{ devstack.local.username }}
     - fullname: DevStack User
@@ -27,7 +26,6 @@ openstack-devstack ensure user and group exist:
       - file: openstack-devstack ensure user and group exist
       - file: openstack-devstack configure local_conf and run stack
       - git: openstack-devstack git cloned and sudo access
-    - unless: getent passwd {{ devstack.local.username }}
   file.directory:
     - name: {{ devstack.dir.dest }}
     - dir_mode: '0755'

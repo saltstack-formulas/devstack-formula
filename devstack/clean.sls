@@ -32,7 +32,6 @@ openstack-devstack cleandown:
   user.absent:
     - name: {{ devstack.local.username }}
     - purge: True
-    - onlyif: getent passwd {{ devstack.local.username }}
   cmd.run:
     - name: userdel -f {{ devstack.local.username }}
     - onlyif: getent passwd {{ devstack.local.username }}
@@ -40,7 +39,6 @@ openstack-devstack cleandown:
       - user: openstack-devstack cleandown
   group.absent:
     - name: {{ devstack.local.username }}
-    - onlyif: getent group {{ devstack.local.username }}
   file.absent:
     - names:
       - {{ devstack.dir.dest }}
@@ -48,4 +46,3 @@ openstack-devstack cleandown:
       - {{ devstack.local.sudoers_file }}
     - require:
       - cmd: openstack-devstack cleandown
-      # group: openstack-devstack cleandown
