@@ -27,5 +27,55 @@ Remove devstack - run unstack, clean, remove users and directories.
 
 Testing
 =========
-Verified on Centos 7.
+Verified on Fedora 27, Ubuntu 16.04, and Centos 7.
+
+Reference Configuration
+========================
+The following configuration was needed on Fedora 27. On Ubuntu the `packages` state was unnecesary.
+
+State top file::
+
+        base:
+          '*':
+            - packages                #we are missing mysql.removed state, needed on Fedora27
+            - mysql                   #install mysql server
+            - devstack.clean
+            - devstack
+
+Pillar Data::
+        
+        devstack:
+          local:
+            username: stack
+            password: devstack
+            enabled_services: 'mysql,key'     #needs quotes
+            ### used by devstack openrc
+            os_password: devstack
+        
+        mysql:
+          # mysql password needs to match devstack 'DATABASE_PASSWORD'
+          server:
+            root_password: 'devstack'
+        
+        packages:
+          pkgs:
+            #Needed because of https://github.com/saltstack-formulas/mysql-formula/issues/195
+            unwanted:
+              - mariadb
+              - mariadb-tokudb-engine
+              - mariadb-config
+              - mariadb-libs
+              - mariadb-rocksdb-engine
+              - mariadb-common
+              - mariadb-cracklib-password-check
+              - mariadb-gssapi-server
+              - mariadb-devel
+              - mariadb-server-utils
+              - mariadb-server
+              - mariadb-backup
+              - mariadb-errmsg
+          archives:
+            #Needed because of https://github.com/saltstack-formulas/mysql-formula/issues/195
+            - unwanted:
+                - /var/lib/mysql/
 
