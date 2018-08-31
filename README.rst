@@ -20,6 +20,16 @@ Available states
 
 Deploy devstack using `stack.sh` and custom `localrc` generated from pillar data.
 
+``devstack.user``
+------------------
+
+Ensure `stack` user and group exists. Included by ``devstack`` state.
+
+``devstack.user.remove``
+------------------
+
+Ensure `stack` user and group is absent. Included by ``devstack.clean`` state.
+
 ``devstack.remove``
 ------------------
 

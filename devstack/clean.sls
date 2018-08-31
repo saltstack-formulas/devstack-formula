@@ -2,6 +2,10 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
+# user/group are not deleted until this state runs!
+include:
+  - .user.remove
+
   {%- if salt['cmd.run']('getent passwd ' ~ devstack.local.username, output_loglevel='quiet') %}
 
 openstack-devstack unstack:
@@ -13,7 +17,8 @@ openstack-devstack unstack:
     - runas: {{ devstack.local.username }}
     - onlyif: test -f {{ devstack.local.sudoers_file }} && getent passwd {{ devstack.local.username }}
     - require_in:
-      - user: openstack-devstack cleandown
+      - file: openstack-devstack cleandown
+      - user: openstack-devstack ensure user and group absent
 
 openstack-devstack clean:
   cmd.run:
@@ -24,28 +29,16 @@ openstack-devstack clean:
     - runas: {{ devstack.local.username }}
     - onlyif: test -f {{ devstack.local.sudoers_file }} && getent passwd {{ devstack.local.username }}
     - require_in:
-      - user: openstack-devstack cleandown
+      - file: openstack-devstack cleandown
+      - user: openstack-devstack ensure user and group absent
 
   {%- endif %}
 
 openstack-devstack cleandown:
-  user.absent:
-    - name: {{ devstack.local.username }}
-    - purge: True
-    - onlyif: getent passwd {{ devstack.local.username }}
-  cmd.run:
-    - name: userdel -f {{ devstack.local.username }}
-    - onlyif: getent passwd {{ devstack.local.username }}
-    - onfail:
-      - user: openstack-devstack cleandown
-  group.absent:
-    - name: {{ devstack.local.username }}
-    - onlyif: getent group {{ devstack.local.username }}
   file.absent:
     - names:
       - {{ devstack.dir.dest }}
       - {{ devstack.dir.log }}/logs
       - {{ devstack.local.sudoers_file }}
     - require:
-      - cmd: openstack-devstack cleandown
-      # group: openstack-devstack cleandown
+      - user: openstack-devstack ensure user and group absent

@@ -2,32 +2,16 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
+# user/group are created before this state runs
+include:
+  - .user
+
 openstack-devstack ensure package dependencies:
   pkg.installed:
     - names:
       {%- for pkg in devstack.pkgs %}
       - {{ pkg }}
       {%- endfor %}
-
-openstack-devstack ensure user and group exist:
-  group.present:
-    - name: {{ devstack.local.username }}
-    - unless: getent group {{ devstack.local.username }}
-  user.present:
-    - name: {{ devstack.local.username }}
-    - fullname: DevStack User
-    - shell: /bin/bash
-    - home: {{ devstack.dir.dest }}
-    - createhome: True
-    - groups:
-      - {{ devstack.local.username }}
-    - require:
-      - group: openstack-devstack ensure user and group exist
-    - require_in:
-      - file: openstack-devstack ensure user and group exist
-      - file: openstack-devstack configure local_conf and run stack
-      - git: openstack-devstack git cloned and sudo access
-    - unless: getent passwd {{ devstack.local.username }}
   file.directory:
     - name: {{ devstack.dir.dest }}
     - dir_mode: '0755'
@@ -41,6 +25,7 @@ openstack-devstack git cloned and sudo access:
     - user: {{ devstack.local.username }}
     - force_clone: True
     - require:
+      - user: - user: openstack-devstack ensure user and group present
       - pkg: openstack-devstack ensure package dependencies
   file.managed:
     - name: {{ devstack.local.sudoers_file }}
