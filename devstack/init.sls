@@ -25,7 +25,7 @@ openstack-devstack git cloned and sudo access:
     - user: {{ devstack.local.username }}
     - force_clone: True
     - require:
-      - user: - user: openstack-devstack ensure user and group present
+      - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
   file.managed:
     - name: {{ devstack.local.sudoers_file }}
