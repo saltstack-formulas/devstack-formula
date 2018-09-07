@@ -35,6 +35,16 @@ openstack-devstack clean:
   {%- endif %}
 
 openstack-devstack cleandown:
+  user.absent:
+    - name: {{ devstack.local.username }}
+    - purge: True
+  cmd.run:
+    - name: userdel -f -r {{ devstack.local.username }}
+    - onlyif: getent passwd {{ devstack.local.username }}
+    - onfail:
+      - user: openstack-devstack cleandown
+  group.absent:
+    - name: {{ devstack.local.username }}
   file.absent:
     - names:
       - {{ devstack.dir.dest }}

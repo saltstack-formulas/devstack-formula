@@ -4,6 +4,7 @@ devstack:
   mode: '0644'
   pkgs: ['git','bridge-utils',]
   pips: []
+  cli: {}
   dir:
     dest: /opt/stack
     home: /home
