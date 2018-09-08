@@ -64,31 +64,38 @@ Reference Solution
 ========================
 The following configuration seems to work fine on RedHat family and Ubuntu. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
 
-Salt states top file (top.sls)::
+Salt states (top.sls) for install::
 
         base:
           '*':
-            - packages          #See we are missing mysql.removed state, needed on Fedora27
-            - mysql             #install mysql server
+            - packages          #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
+            - mysql             #install mysql server (after ``packages`` state runs)
             - devstack.clean
             - devstack
+
+Salt states (top.sls) for Openstack CLI::
+
+        base:
+          '*':
             - devstack.cli      #See https://docs.openstack.org/python-openstackclient/queens/cli/
 
-Devstack Pillar Data (see pillar.example)::
+
+Site/Release-specific Pillar Data (see pillar.example)::
 
         devstack:
-            {% set servicename = 'serviceX' %}
+            {% set yourservicename = 'myKeyStone' %}
+            {% set enabled_services = 'mysql,key' %}
             {% set service_version = 'v0.2.0' %}
             {% set host_ip = '127.0.0.1' %}
             {% set svc_tcpport = '50040' %}
             {% set password = 'devstack' %}
-            {% set servicetype = servicename %}
-            {% set endpointname = servicename ~ service_version %}
+            {% set servicetype = yourservicename %}
+            {% set endpointname = yourservicename ~ service_version %}
 
           local:
             username: stack
             password: {{ password }}
-            enabled_services: 'mysql,key'
+            enabled_services: {{ enabled_services }}
             os_password: {{ password }}
             host_ip: {{ host_ip }}
             host_ipv6: {{ grains.ipv6[-1] }}
@@ -97,7 +104,7 @@ Devstack Pillar Data (see pillar.example)::
           cli:
             user:
               create:
-                {{ servicename }}:
+                {{ yourservicename }}:
                   options:
                     domain: default
                     password: {{ password }}
@@ -118,7 +125,7 @@ Devstack Pillar Data (see pillar.example)::
               add user:
                 service:
                   target:
-                    - {{ servicename }}
+                    - {{ yourservicename }}
                 admins:
                   options:
                     domain: default
@@ -129,7 +136,7 @@ Devstack Pillar Data (see pillar.example)::
                 admin:
                   options:
                     project: service
-                    user: {{ servicename }}
+                    user: {{ yourservicename }}
                 service:
                   options:
                     project: service
@@ -138,9 +145,9 @@ Devstack Pillar Data (see pillar.example)::
               create:
                 {{ servicetype }}:
                   options:
-                    name: {{ servicename }}
+                    name: {{ yourservicename }}
                     type: identity
-                    description: OpenSDS Block Storage
+                    description: {{ yourservicename }} Service
                     enable: True
             endpoint:
               create:

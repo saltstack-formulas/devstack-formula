@@ -1,12 +1,13 @@
 #SITE & RELEASE SPECIFIC DATA
 
-    {% set servicename = 'serviceX' %}
+    {% set yourservicename = 'KeyService' %}
+    {% set enabled_services = 'mysql,key' %}
     {% set service_version = 'v0.2.0' %}
     {% set host_ip = '127.0.0.1' %}
     {% set svc_tcpport = '50040' %}
     {% set password = 'devstack' %}
-    {% set servicetype = servicename %}
-    {% set endpointname = servicename ~ service_version %}
+    {% set servicetype = yourservicename %}
+    {% set endpointname = yourservicename ~ service_version %}
 
 
 #DATA DICTIONARY
@@ -15,7 +16,7 @@ devstack:
   local:
     username: stack
     password: {{ password }}
-    enabled_services: 'mysql,key'
+    enabled_services: {{ enabled_services }}
     os_password: {{ password }}
     host_ip: {{ host_ip }}
     host_ipv6: {{ grains.ipv6[-1] }}
@@ -24,7 +25,7 @@ devstack:
   cli:
     user:
       create:
-        {{ servicename }}:
+        {{ yourservicename }}:
           options:
             domain: default
             password: {{ password }}
@@ -45,7 +46,7 @@ devstack:
       add user:
         service:
           target:
-            - {{ servicename }}
+            - {{ yourservicename }}
         admins:
           options:
             domain: default
@@ -56,7 +57,7 @@ devstack:
         admin:
           options:
             project: service
-            user: {{ servicename }}
+            user: {{ yourservicename }}
         service:
           options:
             project: service
@@ -65,9 +66,9 @@ devstack:
       create:
         {{ servicetype }}:
           options:
-            name: {{ servicename }}
+            name: {{ yourservicename }}
             type: identity
-            description: OpenSDS Block Storage
+            description: {{ yourservicename }} Service
             enable: True
     endpoint:
       create:
