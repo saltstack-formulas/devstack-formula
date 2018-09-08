@@ -2,15 +2,15 @@
 devstack-formula
 ================
 
-A SaltStack formula to deploy local OpenStack cloud (aka Devstack) on GNU/Linux from git source trees.
+A Salt formula to deploy local OpenStack cloud (aka Devstack) on GNU/Linux from git source trees.
 
 **NOTE**
 
 See the full `Salt Formulas installation and usage instructions
 <https://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html>`_.
 
-Available states
-================
+Available Meta states
+======================
 
 .. contents::
     :local:
@@ -18,42 +18,58 @@ Available states
 ``devstack``
 ------------
 
-Deploy devstack using `stack.sh` and custom `localrc` generated from pillar data.
-
-``devstack.user``
-------------------
-
-Ensure `stack` user and group exists. Included by ``devstack`` state.
-
-``devstack.user.remove``
-------------------
-
-Ensure `stack` user and group is absent. Included by ``devstack.clean`` state.
+Meta state for ``devstack.user``, ``devstack.install``, and ``devstack.cli`` states.
 
 ``devstack.remove``
-------------------
+--------------------
 
-Remove devstack - run unstack, clean, remove users and directories.
+Meta state to run unstack, clean, remove users and directories.
 
 ``devstack.cli``
 ------------------
 
-Support for the OpenStack CLI (OSC) documentaed at https://docs.openstack.org/python-openstackclient/queens/cli/. Meta state including ``cli.create``, ``cli.delete``, and ``cli.set`` states.
+Meta state for ``cli.create``, ``cli.delete``, and ``cli.set``. The ``devstack.cli`` state supports the OpenStackClient (aka OSC), a command-line client for OpenStack that brings the command set for Compute, Identity, Image, Object Storage and Block Storage APIs together in a single shell with a uniform command structure.
+
+Available states
+================
+
+.. contents::
+    :local:
+
+``devstack.user``
+------------------
+
+Ensure `stack` user and group exists; included by ``devstack.install`` state.
+
+``devstack.install``
+--------------------
+
+Deploy devstack using `stack.sh` and custom `localrc` generated from pillar data.
+
+``devstack.remove``
+--------------------
+
+Remove devstack - run unstack, clean, remove users and directories.
+
+``devstack.user.remove``
+------------------
+
+Ensure `stack` user and group is absent; included by ``devstack.remove`` state.
 
 ``devstack.cli.create``
 -----------------------
 
-Support for the OpenStack CLI (OSC) create use cases.
+Support for OSC create use cases. See https://docs.openstack.org/python-openstackclient/rocky/cli/command-list.html#command-list.
 
 ``devstack.cli.delete``
 -----------------------
 
-Support for the OpenStack CLI (OSC) delete use cases.
+Support for OSC delete use cases. See https://docs.openstack.org/python-openstackclient/rocky/cli/command-list.html#command-list.
 
 ``devstack.cli.set``
 -----------------------
 
-Support for the OpenStack CLI (OSC) set use cases.
+Support for OSC set use cases. See https://docs.openstack.org/python-openstackclient/rocky/cli/command-list.html#command-list.
 
 
 Testing
@@ -62,7 +78,7 @@ Verified on Fedora 27, Ubuntu 16.04, and Centos 7.
 
 Reference Solution
 ========================
-The following configuration seems to work fine on RedHat family and Ubuntu. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
+The following configuration works on RedHat family and Ubuntu. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
 
 Salt states (top.sls) for install::
 
