@@ -1,33 +1,98 @@
-#Minimal pillars might be
+#SITE & RELEASE SPECIFIC DATA
+
+    {% set yourservicename = 'KeyService' %}
+    {% set enabled_services = 'mysql,key' %}
+    {% set service_version = 'v0.2.0' %}
+    {% set host_ip = '127.0.0.1' %}
+    {% set svc_tcpport = '50040' %}
+    {% set password = 'devstack' %}
+    {% set servicetype = yourservicename %}
+    {% set endpointname = yourservicename ~ service_version %}
+
+
+#DATA DICTIONARY
+
 devstack:
   local:
     username: stack
-    password: devstack
-    enabled_services: 'mysql,key'     #needs quotes
-    ### used by devstack openrc
-    os_password: devstack
+    password: {{ password }}
+    enabled_services: {{ enabled_services }}
+    os_password: {{ password }}
+    host_ip: {{ host_ip }}
+    host_ipv6: {{ grains.ipv6[-1] }}
+    service_host: {{ host_ip }}
 
-#Other custom pillars include ..
-    reclone: yes
-    git_base: 'https://git.example.org'
-    git_branch: stable/pike
-    git_url: 'https://git.example.org/openstack-dev/devstack'
-    host_name: host1.example.com
-    enable_httpd_mod_wsgi_services: True
-    keystone_use_mod_wsgi: True
-    logfile: really_long_filename_stack.sh.log
-    logdays: 1000000
-    verbose: True
-    enable_debug_log_level: True
-    ### used by devstack openrc ###
-    os_password: soggydew
-    service_host: 127.0.0.1
-    host_ip: 127.0.0.1
-    host_ipv6: 127.0.0.1
-    odl_mgr_ip: 127.0.0.1
+  cli:
+    user:
+      create:
+        {{ yourservicename }}:
+          options:
+            domain: default
+            password: {{ password }}
+            project: service
+            enable: True
+      delete:
+        demo:
+          options:
+            domain: default
+        alt_demo:
+          options:
+            domain: default
+    group:
+      create:
+        service:
+          options:
+            domain: default
+      add user:
+        service:
+          target:
+            - {{ yourservicename }}
+        admins:
+          options:
+            domain: default
+          target:
+            - admin
+    role:
+      add:
+        admin:
+          options:
+            project: service
+            user: {{ yourservicename }}
+        service:
+          options:
+            project: service
+            group: service
+    service:
+      create:
+        {{ servicetype }}:
+          options:
+            name: {{ yourservicename }}
+            type: identity
+            description: {{ yourservicename }} Service
+            enable: True
+    endpoint:
+      create:
+        '{{ endpointname }} public https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+          options:
+            region: RegionOne
+            enable: True
+        '{{ endpointname }} internal https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+          options:
+            region: RegionOne
+            enable: True
+        '{{ endpointname }} admin https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+          options:
+            region: RegionOne
+            enable: True
+    project:
+      delete:
+        demo:
+          options:
+            domain: default
+        alt_demo:
+          options:
+            domain: default
+        invisible_to_admin:
+          options:
+            domain: default
 
- dir:
-    dest: /opt/home/stack         # Setting /home/<user>/ triggers stack.sh failure (0700 permissions)
-    log: /tmp/stackyyy            # Setting /tmp/ triggers unstack.sh ('rm -f /tmp') bug
-    config: /opt/home/stack/local.conf
-    sudoers_file: /etc/sudoers.d/50_devstack_user
