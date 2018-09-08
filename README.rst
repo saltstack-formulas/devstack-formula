@@ -84,9 +84,9 @@ Salt states (top.sls) for install::
 
         base:
           '*':
-            - packages          #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
-            - mysql             #install mysql server (after ``packages`` state runs)
-            - devstack.clean
+            - packages.pkgs        #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
+            - packages.archives    #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
+            - mysql                #install mysql server (after ``packages`` state runs)
             - devstack
 
 Salt states (top.sls) for Openstack CLI::
@@ -98,32 +98,31 @@ Salt states (top.sls) for Openstack CLI::
 
 Site/Release-specific Pillar Data (see pillar.example)::
 
+            {% set devstack_svc_name = 'KeyService' %}
+            {% set devstack_enabled_services = 'mysql,key' %}
+            {% set devstack_svc_version = 'v0.2.0' %}
+            {% set devstack_svc_port = '50040' %}
+            {% set devstack_password = 'devstack' %}
+            {% set devstack_svc_type = devstack_svc_name %}
+            {% set devstack_svc_endpoint = devstack_svc_name ~ devstack_svc_version %}
+            {% set host_ip = grains.ip[-1] or '127.0.0.1' %}
+            {% set host_ipv6 = grains.ipv6[-1] %}
         devstack:
-            {% set yourservicename = 'myKeyStone' %}
-            {% set enabled_services = 'mysql,key' %}
-            {% set service_version = 'v0.2.0' %}
-            {% set host_ip = '127.0.0.1' %}
-            {% set svc_tcpport = '50040' %}
-            {% set password = 'devstack' %}
-            {% set servicetype = yourservicename %}
-            {% set endpointname = yourservicename ~ service_version %}
-
           local:
             username: stack
-            password: {{ password }}
-            enabled_services: {{ enabled_services }}
-            os_password: {{ password }}
+            password: {{ devstack_password }}
+            devstack_enabled_services: {{ devstack_enabled_services }}
+            os_password: {{ devstack_password }}
             host_ip: {{ host_ip }}
-            host_ipv6: {{ grains.ipv6[-1] }}
-            service_host: {{ host_ip }}
-
+            host_ipv6: {{ host_ipv6 }}
+            service_host: {{ host_ip or host_ipv6 }}
           cli:
             user:
               create:
-                {{ yourservicename }}:
+                {{ devstack_svc_name }}:
                   options:
                     domain: default
-                    password: {{ password }}
+                    password: {{ devstack_password }}
                     project: service
                     enable: True
               delete:
@@ -141,7 +140,7 @@ Site/Release-specific Pillar Data (see pillar.example)::
               add user:
                 service:
                   target:
-                    - {{ yourservicename }}
+                    - {{ devstack_svc_name }}
                 admins:
                   options:
                     domain: default
@@ -152,30 +151,30 @@ Site/Release-specific Pillar Data (see pillar.example)::
                 admin:
                   options:
                     project: service
-                    user: {{ yourservicename }}
+                    user: {{ devstack_svc_name }}
                 service:
                   options:
                     project: service
                     group: service
             service:
               create:
-                {{ servicetype }}:
+                {{ devstack_svc_type }}:
                   options:
-                    name: {{ yourservicename }}
+                    name: {{ devstack_svc_name }}
                     type: identity
-                    description: {{ yourservicename }} Service
+                    description: {{ devstack_svc_name }} Service
                     enable: True
             endpoint:
               create:
-                '{{ endpointname }} public https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} public https://{{ host_ip or host_ip6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
-                '{{ endpointname }} internal https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} internal https://{{ host_ip or host_ip6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
-                '{{ endpointname }} admin https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} admin https://{{ host_ip or host_ip6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
@@ -191,8 +190,7 @@ Site/Release-specific Pillar Data (see pillar.example)::
                   options:
                     domain: default
 
-
-Supporting Stack Pillar Data::
+Other pillar data::
 
         mysql:
           # mysql password needs to match devstack 'DATABASE_PASSWORD' !!!!!!!!! Important !!!!

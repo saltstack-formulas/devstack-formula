@@ -1,13 +1,14 @@
 #SITE & RELEASE SPECIFIC DATA
 
-    {% set yourservicename = 'KeyService' %}
-    {% set enabled_services = 'mysql,key' %}
-    {% set service_version = 'v0.2.0' %}
-    {% set host_ip = '127.0.0.1' %}
-    {% set svc_tcpport = '50040' %}
-    {% set password = 'devstack' %}
-    {% set servicetype = yourservicename %}
-    {% set endpointname = yourservicename ~ service_version %}
+    {% set devstack_yoursvc_name = 'Keystone' %}
+    {% set devstack_enabled_services = 'mysql,key' %}
+    {% set devstack_yoursvc_version = 'v0.2.0' %}
+    {% set devstack_yoursvc_port = '50040' %}
+    {% set devstack_password = 'devstack' %}
+    {% set devstack_yoursvc_type = devstack_yoursvc_name %}
+    {% set devstack_yoursvc_endpoint = devstack_yoursvc_name ~ devstack_yoursvc_version %}
+    {% set host_ip = grains.ip[-1] or '127.0.0.1' %}
+    {% set host_ipv6 = grains.ipv6[-1] %}
 
 
 #DATA DICTIONARY
@@ -15,20 +16,20 @@
 devstack:
   local:
     username: stack
-    password: {{ password }}
-    enabled_services: {{ enabled_services }}
-    os_password: {{ password }}
+    password: {{ devstack_password }}
+    devstack_enabled_services: {{ devstack_enabled_services }}
+    os_password: {{ devstack_password }}
     host_ip: {{ host_ip }}
-    host_ipv6: {{ grains.ipv6[-1] }}
-    service_host: {{ host_ip }}
+    host_ipv6: {{ host_ipv6 }}
+    service_host: {{ host_ip or host_ipv6 }}
 
   cli:
     user:
       create:
-        {{ yourservicename }}:
+        {{ devstack_yoursvc_name }}:
           options:
             domain: default
-            password: {{ password }}
+            password: {{ devstack_password }}
             project: service
             enable: True
       delete:
@@ -46,7 +47,7 @@ devstack:
       add user:
         service:
           target:
-            - {{ yourservicename }}
+            - {{ devstack_yoursvc_name }}
         admins:
           options:
             domain: default
@@ -57,30 +58,30 @@ devstack:
         admin:
           options:
             project: service
-            user: {{ yourservicename }}
+            user: {{ devstack_yoursvc_name }}
         service:
           options:
             project: service
             group: service
     service:
       create:
-        {{ servicetype }}:
+        {{ devstack_yoursvc_type }}:
           options:
-            name: {{ yourservicename }}
+            name: {{ devstack_yoursvc_name }}
             type: identity
-            description: {{ yourservicename }} Service
+            description: {{ devstack_yoursvc_name }} Service
             enable: True
     endpoint:
       create:
-        '{{ endpointname }} public https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+        '{{ devstack_yoursvc_endpoint }} public https://{{ host_ip or host_ip6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        '{{ endpointname }} internal https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+        '{{ devstack_yoursvc_endpoint }} internal https://{{ host_ip or host_ip6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
-        '{{ endpointname }} admin https://{{ host_ip }}/{{ svc_tcpport }}/{{ service_version }}/%\(tenant_id\)s':
+        '{{ devstack_yoursvc_endpoint }} admin https://{{ host_ip or host_ip6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
             region: RegionOne
             enable: True
