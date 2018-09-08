@@ -10,7 +10,7 @@
 devstack_{{ feature }}_create_{{ item }}:
   cmd.run:
     - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} create {{ getcmd(itemdata) }} {{ item }}
-    - onlyif: openstack {{ feature }} show {{ item }} 2>/dev/null
+    - unless: openstack {{ feature }} show {{ item }} 2>/dev/null
     - runas: {{ devstack.local.username }}
     - env:
       - DEV_STACK_DIR: {{ devstack.dir.dest }}
