@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
-{% from "devstack/files/macros.jinja" import nameopt, getcmd, getopts, getlist with context %}
+{% from "devstack/files/macros.jinja" import getcmd, getopts, getlist with context %}
 
     {% for feature, task in devstack.cli.items() %}
       {%- if "create" in devstack.cli[feature] and devstack.cli[feature]['create'] is mapping %}
