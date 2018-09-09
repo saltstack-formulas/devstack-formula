@@ -40,9 +40,10 @@ devstack:
     neutron_branch:
     swift_branch:
     glance_branch:
-    ### used by devstack openrc ###
+
+    ### needed by devstack openrc ###
     os_password: devstack
-    host_ip:
-    host_ipv6:
-    service_host:
-    odl_mgr_ip:
+    host_ip: {{ grains.ipv4[-1] }}
+    host_ipv6: {{ grains.ipv6[-1] }}
+    service_host: {{ grains.ipv4[-1] or grains.ipv6[-1] }}
+    odl_mgr_ip: {{ grains.ipv4[-1] or grains.ipv6[-1] }}
