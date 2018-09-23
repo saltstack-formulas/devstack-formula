@@ -58,6 +58,7 @@ openstack-devstack configure local_conf and run stack:
     - names:
       - chown -R {{ devstack.local.username }}:{{ devstack.local.username }} {{ devstack.dir.dest }}
       - {{ devstack.dir.dest }}/stack.sh
+    - hide_output: {{ devstack.hide_output }}
     - env:
       - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
       - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}

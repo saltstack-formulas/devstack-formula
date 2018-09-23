@@ -14,6 +14,7 @@
 #DATA DICTIONARY
 
 devstack:
+  hide_output: False    #view output from stack.sh
   local:
     username: stack
     password: {{ devstack_password }}

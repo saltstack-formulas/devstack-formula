@@ -9,7 +9,7 @@
 
 devstack_{{ feature }}_set_{{ item }}:
   cmd.run:
-    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} set {{ getcmd(itemdata) }} {{ item }}
+    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} set {{- getcmd(itemdata) -}} {{ item }}
     - onlyif: openstack {{ feature }} show {{ item }} 2>/dev/null
     - runas: {{ devstack.local.username }}
     - env:

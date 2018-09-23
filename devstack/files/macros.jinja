@@ -8,7 +8,7 @@
   {%- if v is mapping %}
     {{- getcmd(v) -}}
   {%- elif v is string or v is number %}
-      {{ ' --' ~ k if v == True else '' if v == False else ' --' ~ k ~ ' ' ~ v  }}
+      {{- ' --' ~ k ~ ' ' if v == True else '' if v == False else ' --' ~ k ~ ' "' ~ v ~ '" ' -}}
   {%- elif v is iterable and v is not string -%}
       {{- getlist(v) -}}
   {%- endif -%}
@@ -17,7 +17,7 @@
 {%- macro getlist(mylist) -%}
   {%- if mylist and mylist is iterable and mylist is not string -%}
     {%- for v in mylist -%}
-      {{ ' ' ~ v }}
+      {{- ' "' ~ v ~ '" ' -}}
     {%- endfor -%}
   {%- endif -%}
 {%- endmacro -%}

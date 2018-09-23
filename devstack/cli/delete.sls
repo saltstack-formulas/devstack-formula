@@ -9,7 +9,7 @@
 
 devstack_{{ feature }}_delete_{{ item }}:
   cmd.run:
-    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} delete {{ getcmd(itemdata) }} {{ item }}
+    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} delete {{- getcmd(itemdata) -}} {{ item }}
     - onlyif: openstack {{ feature }} show {{ item }} 2>/dev/null
     - runas: {{ devstack.local.username }}
     - env:
