@@ -15,3 +15,12 @@ openstack-devstack ensure user and group exist:
       - {{ devstack.local.username }}
     - require:
       - group: openstack-devstack ensure user and group exist
+  file.directory:
+    - name: {{ devstack.dir.dest }}
+    - user: {{ devstack.local.username }}
+    - dir_mode: {{ devstack.dir_mode }}
+    - group: {{ devstack.local.username }}
+    - recurse:
+      - user
+      - group
+      - mode

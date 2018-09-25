@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 devstack:
+  hide_output: True
+  dir_mode: '0755'
   mode: '0644'
   pkgs: ['git','bridge-utils',]
   pips: []
