@@ -9,7 +9,6 @@ devstack:
   cli: {}
   dir:
     dest: /opt/stack
-    home: /home
     log: /tmp/devstack
   local:
     enabled_services:
