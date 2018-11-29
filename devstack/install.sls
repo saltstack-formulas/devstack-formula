@@ -2,7 +2,7 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
-# user/group are created before this state runs
+# user sls creates required user/group/destdir first
 include:
   - .user
 
@@ -12,12 +12,8 @@ openstack-devstack ensure package dependencies:
       {%- for pkg in devstack.pkgs %}
       - {{ pkg }}
       {%- endfor %}
-  file.directory:
-    - name: {{ devstack.dir.dest }}
-    - dir_mode: '0755'
-    - force: True
 
-openstack-devstack git cloned and sudo access:
+openstack-devstack git cloned:
   git.latest:
     - name: {{ devstack.local.git_url }}
     - rev: {{ devstack.local.git_branch }}
@@ -27,22 +23,8 @@ openstack-devstack git cloned and sudo access:
     - require:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
-  file.managed:
-    - name: {{ devstack.local.sudoers_file }}
-    - source: salt://devstack/files/devstack.sudoers
-    - mode: 440
-    - runas: root
-    - user: root
-    - makedirs: True
-    - template: jinja
-    - context:
-      devusername: {{ devstack.local.username or 'stack' }}
-    - require:
-      - git: openstack-devstack git cloned and sudo access
-    - require_in:
-      - file: openstack-devstack configure local_conf and run stack
 
-openstack-devstack configure local_conf and run stack:
+openstack-devstack configure local_conf:
   file.managed:
     - name: {{ devstack.dir.dest }}/local.conf
     - source: salt://devstack/files/local.conf.j2
@@ -57,6 +39,10 @@ openstack-devstack configure local_conf and run stack:
   cmd.run:
     - names:
       - chown -R {{ devstack.local.username }}:{{ devstack.local.username }} {{ devstack.dir.dest }}
+
+openstack-devstack run stack:
+  cmd.run:
+    - names:
       - {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - env:
@@ -64,4 +50,5 @@ openstack-devstack configure local_conf and run stack:
       - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}
     - runas: {{ devstack.local.username }}
     - require:
-      - file: openstack-devstack configure local_conf and run stack
+      - file: openstack-devstack configure local_conf
+      - cmd: openstack-devstack configure local_conf

@@ -1,6 +1,6 @@
 ## Automate tasks in logical sequence ...
 
 include:
-  - devstack.user.create
+  - devstack.user
   - devstack.install
   - devstack.cli

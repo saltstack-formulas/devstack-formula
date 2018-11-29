@@ -10,11 +10,9 @@
 
 devstack_{{ feature }}_create_prerequisite_{{ item }}:
   cmd.run:
-    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} create {{- getcmd(itemdata) -}} {{ item }}
+    - name: source ~/openrc admin admin && openstack {{ feature }} create {{- getcmd(itemdata) -}} {{ item }}
     - unless: openstack {{ feature }} show {{ item }} 2>/dev/null
     - runas: {{ devstack.local.username }}
-    - env:
-      - DEV_STACK_DIR: {{ devstack.dir.dest }}
 
               {%- endfor %}
           {%- endif %}
@@ -28,11 +26,11 @@ devstack_{{ feature }}_create_prerequisite_{{ item }}:
 
 devstack_{{ feature }}_create_remaining_{{ item }}:
   cmd.run:
-    - name: source ${DEV_STACK_DIR}/openrc admin admin && openstack {{ feature }} create {{- getcmd(itemdata) -}} {{ item }}
+    - name: source ~/openrc admin admin && openstack {{ feature }} create {{- getcmd(itemdata) -}} {{ item }}
     - unless: openstack {{ feature }} show {{ item }} 2>/dev/null
     - runas: {{ devstack.local.username }}
     - env:
-      - DEV_STACK_DIR: {{ devstack.dir.dest }}
+      - DEST: {{ devstack.dir.dest }}
 
             {%- endfor %}
          {%- endif %}
