@@ -17,7 +17,7 @@ openstack-devstack ensure package dependencies:
     - dir_mode: '0755'
     - force: True
 
-openstack-devstack git cloned and sudo access:
+openstack-devstack git cloned:
   git.latest:
     - name: {{ devstack.local.git_url }}
     - rev: {{ devstack.local.git_branch }}
@@ -27,20 +27,6 @@ openstack-devstack git cloned and sudo access:
     - require:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
-  file.managed:
-    - name: {{ devstack.local.sudoers_file }}
-    - source: salt://devstack/files/devstack.sudoers
-    - mode: 440
-    - runas: root
-    - user: root
-    - makedirs: True
-    - template: jinja
-    - context:
-      devusername: {{ devstack.local.username or 'stack' }}
-    - require:
-      - git: openstack-devstack git cloned and sudo access
-    - require_in:
-      - file: openstack-devstack configure local_conf
 
 openstack-devstack configure local_conf:
   file.managed:

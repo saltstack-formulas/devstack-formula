@@ -24,3 +24,17 @@ openstack-devstack ensure user and group exist:
       - user
       - group
       - mode
+
+openstack-devstack ensure sudo rights:
+  file.managed:
+    - name: {{ devstack.local.sudoers_file }}
+    - source: salt://devstack/files/devstack.sudoers
+    - mode: 440
+    - runas: root
+    - user: root
+    - makedirs: True
+    - template: jinja
+    - context:
+      devusername: {{ devstack.local.username or 'stack' }}
+    - require:
+      - user: openstack-devstack ensure user and group exist
