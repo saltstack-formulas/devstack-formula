@@ -2,7 +2,7 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
-# user/group are created before this state runs
+# user sls creates required user/group/destdir first
 include:
   - .user
 
@@ -12,10 +12,6 @@ openstack-devstack ensure package dependencies:
       {%- for pkg in devstack.pkgs %}
       - {{ pkg }}
       {%- endfor %}
-  file.directory:
-    - name: {{ devstack.dir.dest }}
-    - dir_mode: '0755'
-    - force: True
 
 openstack-devstack git cloned:
   git.latest:
