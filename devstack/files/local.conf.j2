@@ -5,7 +5,7 @@
 [[local|localrc]]
 ENABLED_SERVICES={{ data.enabled_services or "" }}
 DEST=${DEST:-{{ "/opt/stack" if not dir.dest else dir.dest }}}
-DATA_DIR=${DATA_DIR:-"${DEST}/data"}
+DATA_DIR=${DATA_DIR:-{{ '/opt/stack' if not dir.dest else dir.dest }}/data}
 
 GIT_BASE=${GIT_BASE:-{{ "https://git.openstack.org" if not data.git_base else data.git_base }}}
 GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not data.git_branch else data.git_branch }}}

@@ -15,7 +15,7 @@ openstack-devstack unstack:
       - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
       - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}
     - runas: {{ devstack.local.username }}
-    - onlyif: test -f {{ devstack.local.sudoers_file }} && getent passwd {{ devstack.local.username }}
+    - onlyif: test -f {{devstack.local.sudoers_file}} && getent passwd {{devstack.local.username}}
     - require_in:
       - file: openstack-devstack cleandown
       - user: openstack-devstack ensure user and group absent
@@ -27,7 +27,7 @@ openstack-devstack clean:
       - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
       - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}
     - runas: {{ devstack.local.username }}
-    - onlyif: test -f {{ devstack.local.sudoers_file }} && getent passwd {{ devstack.local.username }}
+    - onlyif: test -f {{devstack.local.sudoers_file}} && getent passwd {{devstack.local.username}}
     - require_in:
       - file: openstack-devstack cleandown
       - user: openstack-devstack ensure user and group absent
