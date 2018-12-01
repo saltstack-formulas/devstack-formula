@@ -24,6 +24,19 @@ openstack-devstack git cloned:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
 
+openstack-devstack configure stackrc:
+  file.managed:
+    - name: {{ devstack.dir.dest }}/stackrc
+    - source: salt://devstack/files/stackrc.j2
+    - user: {{ devstack.local.username }}
+    - group: {{ devstack.local.username }}
+    - makedirs: True
+    - mode: {{ devstack.mode }}
+    - template: jinja
+    - context:
+        data: {{ devstack.local|json }}
+        dir:  {{ devstack.dir|json }}
+
 openstack-devstack configure local_conf:
   file.managed:
     - name: {{ devstack.dir.dest }}/local.conf
@@ -38,16 +51,15 @@ openstack-devstack configure local_conf:
         dir:  {{ devstack.dir|json }}
   cmd.run:
     - names:
-      - chown -R {{ devstack.local.username }}:{{ devstack.local.username }} {{ devstack.dir.dest }}
+      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}}
 
 openstack-devstack run stack:
   cmd.run:
-    - names:
-      - {{ devstack.dir.dest }}/stack.sh
+    - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - env:
       - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
-      - HOST_IPV6: {{ grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6 }}
+      - HOST_IPV6: {{grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6}}
     - runas: {{ devstack.local.username }}
     - require:
       - file: openstack-devstack configure local_conf
