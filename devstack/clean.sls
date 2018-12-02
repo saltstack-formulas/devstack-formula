@@ -8,6 +8,12 @@ include:
 
   {%- if salt['cmd.run']('getent passwd ' ~ devstack.local.username, output_loglevel='quiet') %}
 
+openstack-devstack check permissions:
+  cmd.run:
+    - name: chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{devstack.dir.tmp}}/devstack
+    - require_in:
+      - cmd: openstack-devstack unstack
+
 openstack-devstack unstack:
   cmd.run:
     - name: sudo {{ devstack.dir.dest }}/unstack.sh | true

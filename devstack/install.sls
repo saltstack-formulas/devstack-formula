@@ -51,7 +51,7 @@ openstack-devstack configure local_conf:
         dir:  {{ devstack.dir|json }}
   cmd.run:
     - names:
-      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}}
+      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{devstack.dir.tmp}}/devstack
 
 openstack-devstack run stack:
   cmd.run:
