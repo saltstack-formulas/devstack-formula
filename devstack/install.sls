@@ -20,6 +20,7 @@ openstack-devstack git cloned:
     - target: {{ devstack.dir.dest }}
     - user: {{ devstack.local.username }}
     - force_clone: True
+    - force_reset: True
     - require:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
@@ -36,6 +37,8 @@ openstack-devstack configure stackrc:
     - context:
         data: {{ devstack.local|json }}
         dir:  {{ devstack.dir|json }}
+    - require_in:
+      - cmd: openstack-devstack run stack
 
 openstack-devstack configure local_conf:
   file.managed:
@@ -51,16 +54,21 @@ openstack-devstack configure local_conf:
         dir:  {{ devstack.dir|json }}
   cmd.run:
     - names:
-      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{devstack.dir.tmp}}/devstack
+      - mkdir -p {{ devstack.dir.tmp }}/devstack
+      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
+    - require_in:
+      - cmd: openstack-devstack run stack
 
 openstack-devstack run stack:
   cmd.run:
     - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
+    - runas: {{ devstack.local.username }}
     - env:
       - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
       - HOST_IPV6: {{grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6}}
-    - runas: {{ devstack.local.username }}
-    - require:
-      - file: openstack-devstack configure local_conf
-      - cmd: openstack-devstack configure local_conf
+  {%- if devstack.pip_pkg %}
+  ### stack.sh uninstalls python-pip; we can reinstall
+  pkg.installed:
+    - name: {{ devstack.pip_pkg }}
+  {%- endif %}

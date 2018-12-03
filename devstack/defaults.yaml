@@ -2,12 +2,15 @@
 # vim: ft=yaml
 devstack:
   hide_output: True
-  dir_mode: '0755'
+  dir_mode: '0775'
   mode: '0644'
   pkgs: ['git','bridge-utils',]
   pips: []
+  pip_pkg: python-pip
   cli: {}
+
   dir:
+    tmp: /tmp
     dest: /opt/stack
     log: /tmp/devstack
   local:
