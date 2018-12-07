@@ -5,6 +5,8 @@
 ####################
 ## Managed by Salt
 ####################
+HOST_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
+HOST_IPV6=${HOST_IPV6:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
 
 # ensure we don't re-source this in the same environment
 [[ -z "$_DEVSTACK_STACKRC" ]] || return 0
