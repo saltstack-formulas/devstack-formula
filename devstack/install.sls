@@ -7,6 +7,15 @@ include:
   - .user
 
 openstack-devstack ensure package dependencies:
+  file.directory:
+    - name: {{ devstack.dir.tmp }}/devstack
+    - makedirs: True
+    - force: True
+    - user: {{ devstack.local.username or 'stack' }}
+    - dir_mode: '0755'
+    - recurse:
+      - user
+      - mode
   pkg.installed:
     - names:
       {%- for pkg in devstack.pkgs %}
@@ -58,7 +67,7 @@ openstack-devstack run stack:
     - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - env:
-      - HOST_IP: {{ grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip }}
+      - HOST_IP: {{grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip}}
       - HOST_IPV6: {{grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6}}
     - runas: {{ devstack.local.username }}
     - require:
