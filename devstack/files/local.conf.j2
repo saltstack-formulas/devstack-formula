@@ -8,7 +8,8 @@ HOST_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
 HOST_IPV6=${HOST_IPV6:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
 HOST_NAME={{ grains.host if not data.host_name else data.host_name }}
 SERVICE_HOST=${SERVICE_HOST:-$HOST_IP}
-MYSQL_HOST=${MYSQL_HOST:-$HOST_IP}
+MYSQL_HOST=${MYSQL_HOST:-{{ data.db_host or '127.0.0.1' }}}
+DATABASE_HOST=${DATABASE_HOST:-{{ data.db_host or '127.0.0.1' }}}
 RABBIT_HOST=${RABBIT_HOST:-$HOST_IP}
 GLANCE_HOSTPORT=${GLANCE_HOSTPORT:-$HOST_IP:9292}
 
