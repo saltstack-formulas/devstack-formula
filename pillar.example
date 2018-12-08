@@ -23,6 +23,7 @@ devstack:
     host_ip: {{ host_ip }}
     host_ipv6: {{ host_ipv6 }}
     service_host: {{ host_ip or host_ipv6 }}
+    db_host: {{ db_host }}
 
   cli:
     user:
