@@ -11,7 +11,7 @@ devstack:
 
   dir:
     dest: /opt/stack
-    tmp: /tmp
+    tmp: /tmp/devstack
     log: /tmp/devstack
   local:
     enabled_services:
