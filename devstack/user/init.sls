@@ -17,7 +17,6 @@ openstack-devstack ensure user and group exist:
       - group: openstack-devstack ensure user and group exist
   file.directory:
     - names:
-      - {{ devstack.dir.dest }}/.cache
       - {{ devstack.dir.dest }}
       - {{ devstack.dir.tmp }}
     - user: {{ devstack.local.username }}
