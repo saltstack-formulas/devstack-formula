@@ -29,7 +29,9 @@ openstack-devstack git cloned:
     - target: {{ devstack.dir.dest }}
     - user: {{ devstack.local.username }}
     - force_clone: True
+    - force_fetch: True
     - force_reset: True
+    - force_checkout: True
     - require:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies

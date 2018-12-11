@@ -1,5 +1,6 @@
 
 RedHat:
+  pip_pkg: python2-pip
   pkgs:
     - git
     - redhat-lsb-core
