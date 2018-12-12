@@ -26,6 +26,9 @@ devstack:
     service_host: {{ host_ip or host_ipv6 }}
     db_host: {{ db_host }}
 
+  dir:
+    tmp: /tmp/devstack	{# not sure why centos wants this? #}
+
   cli:
     user:
       create:
