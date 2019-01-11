@@ -64,11 +64,13 @@ devstack:
         admin:
           options:
             project: service
-            user: {{ devstack_yoursvc_name }}
+          user:
+            - {{ devstack_yoursvc_name }}
         service:
           options:
             project: service
-            group: service
+          group:
+            - service
     service:
       create:
         {{ devstack_yoursvc_type }}:

@@ -71,6 +71,10 @@ Support for OSC delete use cases. See https://docs.openstack.org/python-openstac
 
 Support for OSC set use cases. See https://docs.openstack.org/python-openstackclient/rocky/cli/command-list.html#command-list.
 
+``devstack.cli.add``
+-----------------------
+
+Support for OSC add use cases. See https://docs.openstack.org/python-openstackclient/rocky/cli/command-list.html#command-list.
 
 Testing
 =========
@@ -151,11 +155,13 @@ Site/Release-specific Pillar Data (see pillar.example)::
                 admin:
                   options:
                     project: service
-                    user: {{ devstack_svc_name }}
+                  user:
+                    - {{ devstack_svc_name }}
                 service:
                   options:
                     project: service
-                    group: service
+                  group:
+                    - service
             service:
               create:
                 {{ devstack_svc_type }}:

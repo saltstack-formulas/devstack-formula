@@ -4,3 +4,4 @@ include:
   - .delete
   - .set
   - .create
+  - .add
