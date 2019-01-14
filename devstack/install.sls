@@ -70,6 +70,13 @@ openstack-devstack configure local_conf:
     - require_in:
       - cmd: openstack-devstack run stack
 
+openstack-devstack nginx conflict handler before stack.sh:
+  cmd.run:
+    - names:
+      - systemctl stop nginx
+      - touch /tmp/devstack_stopped_nginx
+    - onlyif: systemctl status ngin-x
+
 openstack-devstack run stack:
   cmd.run:
     - name: {{ devstack.dir.dest }}/stack.sh
@@ -83,3 +90,13 @@ openstack-devstack run stack:
   pkg.installed:
     - name: {{ devstack.pip_pkg }}
   {%- endif %}
+  service.running:
+    - name: nginx
+    - onlyif: systemctl status nginx 2>/dev/null
+
+openstack-devstack nginx conflict handler after stack.sh:
+  cmd.run:
+    - names:
+      - systemctl start nginx
+      - rm /tmp/devstack_stopped_nginx
+    - onlyif: test -f /tmp/devstack_stopped_nginx
