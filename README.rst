@@ -109,17 +109,17 @@ Site/Release-specific Pillar Data (see pillar.example)::
             {% set devstack_password = 'devstack' %}
             {% set devstack_svc_type = devstack_svc_name %}
             {% set devstack_svc_endpoint = devstack_svc_name ~ devstack_svc_version %}
-            {% set host_ip = grains.ipv4[-1] or '127.0.0.1' %}
-            {% set host_ipv6 = grains.ipv6[-1] %}
+            {% set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
+            {% set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
         devstack:
           local:
             username: stack
             password: {{ devstack_password }}
             enabled_services: {{ devstack_enabled_services }}
             os_password: {{ devstack_password }}
-            host_ip: {{ host_ip }}
+            host_ip: {{ host_ipv4 }}
             host_ipv6: {{ host_ipv6 }}
-            service_host: {{ host_ip or host_ipv6 }}
+            service_host: {{ host_ipv4 or host_ipv6 }}
           cli:
             user:
               create:
@@ -172,15 +172,15 @@ Site/Release-specific Pillar Data (see pillar.example)::
                     enable: True
             endpoint:
               create:
-                '{{ devstack_svc_endpoint }} public https://{{ host_ip or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
-                '{{ devstack_svc_endpoint }} internal https://{{ host_ip or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
-                '{{ devstack_svc_endpoint }} admin https://{{ host_ip or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
+                '{{ devstack_svc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_svc_port }}/{{ devstack_svc_version }}/%\(tenant_id\)s':
                   options:
                     region: RegionOne
                     enable: True
