@@ -11,3 +11,4 @@ Debian:
   pkgs:
     - git
     - bridge-utils
+    - apache2

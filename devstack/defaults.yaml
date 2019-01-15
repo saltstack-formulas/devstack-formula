@@ -19,7 +19,7 @@ devstack:
     password: devstack
     sudoers_file: /etc/sudoers.d/50_devstack_user
     git_base: 'https://git.openstack.org'
-    git_branch: master
+    git_branch: 'stable/rocky'
     git_url: 'https://git.openstack.org/openstack-dev/devstack'
     reclone: no
     host_name: {{ grains.host }}
@@ -47,7 +47,5 @@ devstack:
 
     ### needed by devstack openrc ###
     os_password: devstack
-    host_ip: {{ grains.ipv4[-1] }}
-    host_ipv6: {{ grains.ipv6[-1] }}
-    service_host: {{ grains.ipv4[-1] or grains.ipv6[-1] }}
-    odl_mgr_ip: {{ grains.ipv4[-1] or grains.ipv6[-1] }}
+    host_ipv4: {{ '127.0.0.1' if not grains.ipv4 else grains.ipv4[-1] }}
+    host_ipv6: {{ '' if not grains.ipv6 else grains.ipv6[-1] }}

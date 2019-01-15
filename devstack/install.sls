@@ -46,8 +46,7 @@ openstack-devstack configure stackrc:
     - mode: {{ devstack.mode }}
     - template: jinja
     - context:
-        data: {{ devstack.local|json }}
-        dir:  {{ devstack.dir|json }}
+        devstack: {{ devstack|json }}
     - require_in:
       - cmd: openstack-devstack run stack
 
@@ -61,8 +60,7 @@ openstack-devstack configure local_conf:
     - mode: {{ devstack.mode }}
     - template: jinja
     - context:
-        data: {{ devstack.local|json }}
-        dir:  {{ devstack.dir|json }}
+        devstack: {{ devstack|json }}
   cmd.run:
     - names:
       - mkdir -p {{ devstack.dir.tmp }}/devstack
@@ -70,16 +68,33 @@ openstack-devstack configure local_conf:
     - require_in:
       - cmd: openstack-devstack run stack
 
+openstack-devstack nginx conflict handler before stack.sh:
+  cmd.run:
+    - names:
+      - systemctl stop nginx
+      - touch /tmp/devstack_stopped_nginx
+    - onlyif: systemctl status ngin-x
+
 openstack-devstack run stack:
   cmd.run:
     - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.username }}
     - env:
-      - HOST_IP: {{grains.ipv4[-1] if not devstack.local.host_ip else devstack.local.host_ip}}
-      - HOST_IPV6: {{grains.ipv6[-1] if not devstack.local.host_ipv6 else devstack.local.host_ipv6}}
+      - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
+      - HOST_IPV6: {{ devstack.local.host_ipv6 }}
   {%- if devstack.pip_pkg %}
   ### stack.sh uninstalls python-pip; we can reinstall
   pkg.installed:
     - name: {{ devstack.pip_pkg }}
   {%- endif %}
+  service.running:
+    - name: nginx
+    - onlyif: systemctl status nginx 2>/dev/null
+
+openstack-devstack nginx conflict handler after stack.sh:
+  cmd.run:
+    - names:
+      - systemctl start nginx
+      - rm /tmp/devstack_stopped_nginx
+    - onlyif: test -f /tmp/devstack_stopped_nginx

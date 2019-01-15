@@ -4,56 +4,56 @@
 #####################
 
 [[local|localrc]]
-HOST_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
-HOST_IPV6=${HOST_IPV6:-{{ grains.ipv4[-1] if not data.host_ip else data.host_ip }}}
-HOST_NAME={{ grains.host if not data.host_name else data.host_name }}
+HOST_IP=${HOST_IP:-{{ devstack.local.host_ipv4 }}}
+HOST_IPV6=${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
+HOST_NAME={{ grains.host if not devstack.local.host_name else devstack.local.host_name }}
 SERVICE_HOST=${SERVICE_HOST:-$HOST_IP}
-MYSQL_HOST=${MYSQL_HOST:-{{ data.db_host or '127.0.0.1' }}}
-DATABASE_HOST=${DATABASE_HOST:-{{ data.db_host or '127.0.0.1' }}}
+MYSQL_HOST=${MYSQL_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
+DATABASE_HOST=${DATABASE_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
 RABBIT_HOST=${RABBIT_HOST:-$HOST_IP}
 GLANCE_HOSTPORT=${GLANCE_HOSTPORT:-$HOST_IP:9292}
 
-ENABLED_SERVICES={{ data.enabled_services or "" }}
-DEST=${DEST:-{{ "/opt/stack" if not dir.dest else dir.dest }}}
-DATA_DIR=${DATA_DIR:-{{ '/opt/stack' if not dir.dest else dir.dest }}/data}
+ENABLED_SERVICES={{ devstack.local.enabled_services or "" }}
+DEST=${DEST:-{{ "/opt/stack" if not devstack.dir.dest else devstack.dir.dest }}}
+DATA_DIR=${DATA_DIR:-{{ '/opt/stack' if not devstack.dir.dest else devstack.dir.dest }}/data}
 
-GIT_BASE=${GIT_BASE:-{{ "https://git.openstack.org" if not data.git_base else data.git_base }}}
-GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not data.git_branch else data.git_branch }}}
-RECLONE={{ data.reclone or "no" }}
+GIT_BASE=${GIT_BASE:-{{ "https://git.openstack.org" if not devstack.local.git_base else devstack.local.git_base }}}
+GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not devstack.local.git_branch else devstack.local.git_branch }}}
+RECLONE={{ devstack.local.reclone or "no" }}
 
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter ..
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ data.admin_password or data.password or "nomoresecret" }}}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or devstack.local.password or "nomoresecret" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ data.database_password or data.password or "stackdb" }}}
-RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ data.rabbit_password or data.password or "stackqueue" }}}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ devstack.local.database_password or devstack.local.password or "stackdb" }}}
+RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password or devstack.local.password or "stackqueue" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-SERVICE_TOKEN=${SERVICE_TOKEN:-{{ data.service_token or data.password or "nomoresecret" }}}
+SERVICE_TOKEN=${SERVICE_TOKEN:-{{ devstack.local.service_token or devstack.local.password or "nomoresecret" }}}
 
 # Logging
 # -------
-LOGFILE={{ dir.log or "${DEST}/logs" }}/{{ data.logfile }}
-VERBOSE={{ data.verbose or "" }}
-ENABLE_DEBUG_LOG_LEVEL={{ data.enable_debug_log_level or "" }}
-ENABLE_VERBOSE_LOG_LEVEL={{ data.enable_verbose_log_level or "" }}
+LOGFILE={{ devstack.dir.log or "${DEST}/logs" }}/{{ devstack.local.logfile }}
+VERBOSE={{ devstack.local.verbose or "" }}
+ENABLE_DEBUG_LOG_LEVEL={{ devstack.local.enable_debug_log_level or "" }}
+ENABLE_VERBOSE_LOG_LEVEL={{ devstack.local.enable_verbose_log_level or "" }}
 
 # Old log files are automatically removed after 7 days to keep things neat.  Change
 # the number of days by setting ``LOGDAYS``.
-LOGDAYS={{ data.logdays or "2" }}
+LOGDAYS={{ devstack.local.logdays or "2" }}
 
 # Nova logs will be colorized if ``SYSLOG`` is not set; turn this off by setting false.
-LOG_COLOR={{ data.log_color or "True" }}
+LOG_COLOR={{ devstack.local.log_color or "True" }}
 
 # Using branches
 # --------------
-CINDER_BRANCH=${CINDER_BRANCH:-{{ data.cinder_branch or data.git_branch }}}
-GLANCE_BRANCH=${GLANCE_BRANCH:-{{ data.glance_branch or data.git_branch }}}
-HORIZON_BRANCH=${HORIZON_BRANCH:-{{ data.horizon_branch or data.git_branch }}}
-KEYSTONE_BRANCH=${KEYSTONE_BRANCH:-{{ data.keystone_branch or data.git_branch }}}
-KEYSTONECLIENT_BRANCH=${KEYSTONECLIENT_BRANCH:-{{ data.keystoneclient_branch or data.git_branch }}}
-NOVA_BRANCH=${NOVA_BRANCH:-{{ data.nova_branch or data.git_branch }}}
-NOVACLIENT_BRANCH=${NOVACLIENT_BRANCH:-{{ data.novaclient_branch or data.git_branch }}}
-NEUTRON_BRANCH=${NEUTRON_BRANCH:-{{ data.neutron_branch or data.git_branch }}}
-SWIFT_BRANCH=${SWIFT_BRANCH:-{{ data.swift_branch or data.git_branch }}}
+CINDER_BRANCH=${CINDER_BRANCH:-{{ devstack.local.cinder_branch or devstack.local.git_branch }}}
+GLANCE_BRANCH=${GLANCE_BRANCH:-{{ devstack.local.glance_branch or devstack.local.git_branch }}}
+HORIZON_BRANCH=${HORIZON_BRANCH:-{{ devstack.local.horizon_branch or devstack.local.git_branch }}}
+KEYSTONE_BRANCH=${KEYSTONE_BRANCH:-{{ devstack.local.keystone_branch or devstack.local.git_branch }}}
+KEYSTONECLIENT_BRANCH=${KEYSTONECLIENT_BRANCH:-{{ devstack.local.keystoneclient_branch or devstack.local.git_branch }}}
+NOVA_BRANCH=${NOVA_BRANCH:-{{ devstack.local.nova_branch or devstack.local.git_branch }}}
+NOVACLIENT_BRANCH=${NOVACLIENT_BRANCH:-{{ devstack.local.novaclient_branch or devstack.local.git_branch }}}
+NEUTRON_BRANCH=${NEUTRON_BRANCH:-{{ devstack.local.neutron_branch or devstack.local.git_branch }}}
+SWIFT_BRANCH=${SWIFT_BRANCH:-{{ devstack.local.swift_branch or devstack.local.git_branch }}}
 
 # Swift
 # -----
@@ -67,7 +67,7 @@ Q_USE_SECGROUP=${Q_USE_SECGROUP:-True}
 FLOATING_RANGE=${FLOATING_RANGE:-}
 IPV4_ADDRS_SAFE_TO_USE=${IPV4_ADDRS_SAFE_TO_USE:-}
 Q_FLOATING_ALLOCATION_POOL=${Q_FLOATING_ALLOCATION_POOL:-}
-PUBLIC_NETWORK_GATEWAY=${PUBLIC_NETWORK_GATEWAY:-{{ grains.ip4_gw or grains.ipv6_gw }}}
+PUBLIC_NETWORK_GATEWAY=${PUBLIC_NETWORK_GATEWAY:-{{ grains.ip4_gw }}}
 PUBLIC_INTERFACE=${PUBLIC_INTERFACE:-}
 
 # Open vSwitch provider networking configuration
@@ -76,9 +76,9 @@ OVS_PHYSICAL_BRIDGE=${OVS_PHYSICAL_BRIDGE:-br-ex}
 PUBLIC_BRIDGE=${OVS_PHYSICAL_BRIDGE:-br-ex}
 OVS_BRIDGE_MAPPINGS=${OVS_BRIDGE_MAPPINGS:-public:br-ex}
 
-ODL_MGR_IP=${HOST_IP:-{{ grains.ipv4[-1] if not data.odl_mgr_ip else data.odl_mgr_ip }}}
+ODL_MGR_IP=${HOST_IP:-'127.0.0.1' }}}
 
 # Used by openrc
 #---------------
 # Ref: https://docs.openstack.org/devstack/latest/configuration.html#local-conf
-OS_PASSWORD=${OS_PASSWORD:{{ data.os_password or "$ADMIN_PASSWORD" }}}
+OS_PASSWORD=${OS_PASSWORD:{{ devstack.local.os_password or "$ADMIN_PASSWORD" }}}
