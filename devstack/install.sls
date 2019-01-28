@@ -32,6 +32,13 @@ openstack-devstack git cloned:
     - force_fetch: True
     - force_reset: True
     - force_checkout: True
+    {% if grains['saltversioninfo'] >= [2017, 7, 0] %}
+    - retry:
+        attempts: 3
+        until: True
+        interval: 60
+        splay: 10
+    {%- endif %}
     - require:
       - user: openstack-devstack ensure user and group exist
       - pkg: openstack-devstack ensure package dependencies
