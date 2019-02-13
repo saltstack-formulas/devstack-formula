@@ -22,12 +22,12 @@ GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not devstack.local.git_branch else devst
 RECLONE={{ devstack.local.reclone or "no" }}
 
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter ..
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or devstack.local.password or "nomoresecret" }}}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or "nomoresecret" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ devstack.local.database_password or devstack.local.password or "stackdb" }}}
-RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password or devstack.local.password or "stackqueue" }}}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ devstack.local.database_password or "stackdb" }}}
+RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password or "stackqueue" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-SERVICE_TOKEN=${SERVICE_TOKEN:-{{ devstack.local.service_token or devstack.local.password or "nomoresecret" }}}
+SERVICE_TOKEN=${SERVICE_TOKEN:-{{ devstack.local.service_token or "nomoresecret" }}}
 
 # Logging
 # -------
