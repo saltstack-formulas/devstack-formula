@@ -1,1 +1,1 @@
-{{ devusername }} ALL=(ALL) NOPASSWD:ALL
+{{ stack_user }} ALL=(ALL) NOPASSWD:ALL
