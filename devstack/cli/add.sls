@@ -11,7 +11,7 @@
                 {%- if "user" in itemdata and itemdata['user'] is iterable %}
                   {%- for user in itemdata['user'] %}
 
-devstack_{{ feature }}_add_prerequisite_{{ item }}_{{ user }}:
+openstack devstack {{ feature }} add prerequisite {{ item }} {{ user }}:
   cmd.run:
     - name: source ~/openrc admin admin && openstack {{ feature }} add {{- getcmd(itemdata['options']) -}} --user {{ user }} {{ item }}
     - runas: {{ devstack.local.username }}
@@ -24,7 +24,7 @@ devstack_{{ feature }}_add_prerequisite_{{ item }}_{{ user }}:
                 {%- if "group" in itemdata and itemdata['group'] is iterable %}
                   {%- for group in itemdata['group'] %}
 
-devstack_{{ feature }}_add_prerequisite_{{ item }}_{{ group }}:
+openstack devstack {{ feature }} add prerequisite {{ item }} {{ group }}:
   cmd.run:
     - name: source ~/openrc admin admin && openstack {{ feature }} add {{- getcmd(itemdata['options']) -}} --group {{ group }} {{ item }}
     - runas: {{ devstack.local.username }}

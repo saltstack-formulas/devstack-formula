@@ -6,7 +6,7 @@
 include:
   - .user
 
-openstack-devstack ensure package dependencies:
+openstack devstack ensure package dependencies:
   file.directory:
     - name: {{ devstack.dir.tmp }}/devstack
     - makedirs: True
@@ -22,7 +22,7 @@ openstack-devstack ensure package dependencies:
       - {{ pkg }}
       {%- endfor %}
 
-openstack-devstack git cloned:
+openstack devstack git cloned:
   git.latest:
     - name: {{ devstack.local.git_url }}
     - rev: {{ devstack.local.git_branch }}
@@ -40,10 +40,10 @@ openstack-devstack git cloned:
         splay: 10
     {%- endif %}
     - require:
-      - user: openstack-devstack ensure user and group exist
-      - pkg: openstack-devstack ensure package dependencies
+      - user: openstack devstack ensure user and group exist
+      - pkg: openstack devstack ensure package dependencies
 
-openstack-devstack configure stackrc:
+openstack devstack configure stackrc:
   file.managed:
     - name: {{ devstack.dir.dest }}/stackrc
     - source: salt://devstack/files/stackrc.j2
@@ -55,9 +55,9 @@ openstack-devstack configure stackrc:
     - context:
         devstack: {{ devstack|json }}
     - require_in:
-      - cmd: openstack-devstack run stack
+      - cmd: openstack devstack run stack
 
-openstack-devstack configure local_conf:
+openstack devstack configure local_conf:
   file.managed:
     - name: {{ devstack.dir.dest }}/local.conf
     - source: salt://devstack/files/local.conf.j2
@@ -73,16 +73,16 @@ openstack-devstack configure local_conf:
       - mkdir -p {{ devstack.dir.tmp }}/devstack
       - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
     - require_in:
-      - cmd: openstack-devstack run stack
+      - cmd: openstack devstack run stack
 
-openstack-devstack nginx conflict handler before stack.sh:
+openstack devstack nginx conflict handler before stack.sh:
   cmd.run:
     - names:
       - systemctl stop nginx
       - touch /tmp/devstack_stopped_nginx
     - onlyif: systemctl status ngin-x
 
-openstack-devstack run stack:
+openstack devstack run stack:
   cmd.run:
     - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
@@ -99,7 +99,7 @@ openstack-devstack run stack:
     - name: nginx
     - onlyif: systemctl status nginx 2>/dev/null
 
-openstack-devstack nginx conflict handler after stack.sh:
+openstack devstack nginx conflict handler after stack.sh:
   cmd.run:
     - names:
       - systemctl start nginx
