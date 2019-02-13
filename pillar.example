@@ -6,6 +6,7 @@
     {% set devstack_yoursvc_port = '50040' %}
     {% set devstack_password = 'devstack' %}
     {% set devstack_yoursvc_type = devstack_yoursvc_name %}
+    {% set devstack_yoursvc_region = 'RegionOne' %}
     {% set devstack_yoursvc_endpoint = devstack_yoursvc_name ~ devstack_yoursvc_version %}
     {% set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
     {% set db_host = '127.0.0.1' %}  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
@@ -84,15 +85,15 @@ devstack:
       create:
         '{{ devstack_yoursvc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ devstack_yoursvc_region }}
             enable: True
         '{{ devstack_yoursvc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ devstack_yoursvc_region }}
             enable: True
         '{{ devstack_yoursvc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ devstack_yoursvc_region }}
             enable: True
     project:
       delete:
