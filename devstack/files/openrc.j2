@@ -14,7 +14,7 @@
 
 OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{ devstack.local.os_project_name or "default" }}}
 OS_USERNAME=${OS_USERNAME:-{{ devstack.local.os_username or "demo" }}}
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or "secret" }}}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or devstack.local.os_password or "secret" }}}
 
 ########################################################################
 
