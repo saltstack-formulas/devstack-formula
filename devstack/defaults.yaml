@@ -9,6 +9,8 @@ devstack:
   pip_pkg: python-pip
   cli: {}
 
+  managed:
+    openrc: True
   dir:
     dest: /opt/stack
     tmp: /tmp/devstack
