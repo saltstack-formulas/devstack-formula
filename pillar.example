@@ -4,12 +4,12 @@
     {% set devstack_enabled_services = 'mysql,key' %}
     {% set devstack_yoursvc_version = 'v0.2.0' %}
     {% set devstack_yoursvc_port = '50040' %}
-    {% set devstack_password = 'devstack' %}
     {% set devstack_yoursvc_type = devstack_yoursvc_name %}
     {% set devstack_yoursvc_endpoint = devstack_yoursvc_name ~ devstack_yoursvc_version %}
     {% set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
     {% set db_host = '127.0.0.1' %}  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
     {% set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
+    {% set os_password = 'devstack' %}
 
 
 #DATA DICTIONARY
@@ -17,11 +17,10 @@
 devstack:
   hide_output: False    #view output from stack.sh
   local:
-    username: stack
-    password: {{ devstack_password }}
+    stack_user: stack
     git_branch: 'stable/rocky'
     enabled_services: {{ devstack_enabled_services }}
-    os_password: {{ devstack_password }}
+    os_password: {{ os_password }}
     host_ipv4: {{ host_ipv4 }}
     host_ipv6: {{ host_ipv6 }}
     service_host: {{ host_ipv4 or host_ipv6 }}
@@ -36,7 +35,7 @@ devstack:
         {{ devstack_yoursvc_name }}:
           options:
             domain: default
-            password: {{ devstack_password }}
+            password: {{ os_password }}
             project: service
             enable: True
       delete:
