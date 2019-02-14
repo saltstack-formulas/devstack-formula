@@ -34,6 +34,7 @@ devstack:
     enable_debug_log_level:
     enable_verbose_log_level:
     admin_password:
+    database_username:
     database_password:
     rabbit_password:
     service_token:
