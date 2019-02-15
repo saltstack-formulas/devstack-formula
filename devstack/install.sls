@@ -92,14 +92,23 @@ openstack devstack run stack:
     - env:
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}
-  {%- if devstack.pip_pkg %}
-  ### stack.sh uninstalls python-pip; we can reinstall
-  pkg.installed:
-    - name: {{ devstack.pip_pkg }}
-  {%- endif %}
-  service.running:
-    - name: nginx
-    - onlyif: systemctl status nginx 2>/dev/null
+      - HOST_NAME: {{'' if 'host_name' not in devstack.local else devstack.local.host_name}}
+      - DATABASE_HOST: {{'' if 'db_host' not in devstack.local else devstack.local.db_host}}
+      - ADMIN_PASSWORD: {{'' if 'admin_password' not in devstack.local else devstack.local.admin_password}}
+      - OS_USERNAME: {{'' if 'os_username' not in devstack.local else devstack.local.os_username}}
+      - OS_PASSWORD: {{'' if 'os_password' not in devstack.local else devstack.local.os_password}}
+      - OS_PROJECT_NAME: {{'' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
+  file.managed:
+    - name: {{ devstack.dir.dest }}/openrc
+    - source: salt://devstack/files/openrc.j2
+    - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
+    - makedirs: True
+    - mode: {{ devstack.mode }}
+    - template: jinja
+    - context:
+        devstack: {{ devstack|json }}
+    - onlyif: {{ devstack.managed.openrc }}
 
 openstack devstack nginx conflict handler after stack.sh:
   cmd.run:
@@ -107,3 +116,6 @@ openstack devstack nginx conflict handler after stack.sh:
       - systemctl start nginx
       - rm /tmp/devstack_stopped_nginx
     - onlyif: test -f /tmp/devstack_stopped_nginx
+  pkg.installed:
+    - name: {{ devstack.pip_pkg }}      ##stack.sh removed the package
+    - onlyif: {{ devstack.pip_pkg }}

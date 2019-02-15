@@ -30,6 +30,8 @@ devstack:
     host_ipv6: {{ host_ipv6 }}
     service_host: {{ host_ipv4 or host_ipv6 }}
     db_host: {{ db_host }}
+  managed:
+    openrc: False
 
   dir:
     tmp: /tmp/devstack	{# not sure why centos wants this? #}
