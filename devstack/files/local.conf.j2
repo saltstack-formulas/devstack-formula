@@ -24,7 +24,6 @@ RECLONE={{ devstack.local.reclone or "no" }}
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter ..
 ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or devstack.local.os_password or "nomoresecret" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-DATABASE_USERNAME=${DATABASE_USERNAME:-{{devstack.local.database_username or devstack.local.os_username or "stack"}}}
 DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ devstack.local.database_password or devstack.local.os_password or "stackdb" }}}
 RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password or devstack.local.os_password or "stackqueue" }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}

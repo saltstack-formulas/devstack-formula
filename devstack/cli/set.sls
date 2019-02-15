@@ -7,11 +7,11 @@
       {%- if "set" in devstack.cli[feature] and devstack.cli[feature]['set'] is mapping %}
         {% for item, itemdata in devstack.cli[feature]['set'].items() %}
 
-devstack_{{ feature }}_set_{{ item }}:
+openstack devstack {{ feature }} set {{ item }}:
   cmd.run:
     - name: source ~/openrc admin admin && openstack {{ feature }} set {{- getcmd(itemdata) -}} {{ item }}
     - onlyif: source ~/openrc admin admin && openstack {{ feature }} show {{ item }} 2>/dev/null
-    - runas: {{ devstack.local.username }}
+    - runas: {{ devstack.local.stack_user }}
 
         {% endfor %}
       {%- endif %}

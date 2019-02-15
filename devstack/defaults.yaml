@@ -16,9 +16,8 @@ devstack:
     tmp: /tmp/devstack
     log: /tmp/devstack
   local:
+    stack_user: stack
     enabled_services:
-    username: stack
-    password: devstack
     sudoers_file: /etc/sudoers.d/50_devstack_user
     git_base: 'https://git.openstack.org'
     git_branch: 'stable/rocky'
@@ -33,8 +32,8 @@ devstack:
     verbose:
     enable_debug_log_level:
     enable_verbose_log_level:
-    admin_password:
-    database_username:
+
+    ### leave these blank here
     database_password:
     rabbit_password:
     service_token:
@@ -48,7 +47,10 @@ devstack:
     swift_branch:
     glance_branch:
 
-    ### needed by devstack openrc ###
+    ### commonly wanted openstack configuration variables ###
+    os_project_name: admin
+    os_username: admin
     os_password: devstack
+    admin_password: devstack
     host_ipv4: {{ '127.0.0.1' if not grains.ipv4 else grains.ipv4[-1] }}
     host_ipv6: {{ '' if not grains.ipv6 else grains.ipv6[-1] }}
