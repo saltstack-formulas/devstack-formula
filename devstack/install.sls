@@ -11,7 +11,7 @@ openstack devstack ensure package dependencies:
     - name: {{ devstack.dir.tmp }}/devstack
     - makedirs: True
     - force: True
-    - user: {{ devstack.local.username or 'stack' }}
+    - user: {{ devstack.local.stack_user }}
     - dir_mode: '0755'
     - recurse:
       - user
@@ -27,7 +27,7 @@ openstack devstack git cloned:
     - name: {{ devstack.local.git_url }}
     - rev: {{ devstack.local.git_branch }}
     - target: {{ devstack.dir.dest }}
-    - user: {{ devstack.local.username }}
+    - user: {{ devstack.local.stack_user }}
     - force_clone: True
     - force_fetch: True
     - force_reset: True
@@ -47,8 +47,8 @@ openstack devstack configure stackrc:
   file.managed:
     - name: {{ devstack.dir.dest }}/stackrc
     - source: salt://devstack/files/stackrc.j2
-    - user: {{ devstack.local.username }}
-    - group: {{ devstack.local.username }}
+    - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
     - makedirs: True
     - mode: {{ devstack.mode }}
     - template: jinja
@@ -61,17 +61,19 @@ openstack devstack configure local_conf:
   file.managed:
     - name: {{ devstack.dir.dest }}/local.conf
     - source: salt://devstack/files/local.conf.j2
-    - user: {{ devstack.local.username }}
-    - group: {{ devstack.local.username }}
+    - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
     - makedirs: True
     - mode: {{ devstack.mode }}
     - template: jinja
     - context:
         devstack: {{ devstack|json }}
+
+openstack devstack configure required directories:
   cmd.run:
     - names:
       - mkdir -p {{ devstack.dir.tmp }}/devstack
-      - chown -R {{devstack.local.username}}:{{devstack.local.username}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
+      - chown -R {{devstack.local.stack_user}}:{{devstack.local.stack_user}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
     - require_in:
       - cmd: openstack devstack run stack
 
@@ -86,7 +88,7 @@ openstack devstack run stack:
   cmd.run:
     - name: {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
-    - runas: {{ devstack.local.username }}
+    - runas: {{ devstack.local.stack_user }}
     - env:
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}

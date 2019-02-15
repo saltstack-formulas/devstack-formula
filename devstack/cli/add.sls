@@ -14,7 +14,7 @@
 openstack devstack {{ feature }} add prerequisite {{ item }} {{ user }}:
   cmd.run:
     - name: source ~/openrc admin admin && openstack {{ feature }} add {{- getcmd(itemdata['options']) -}} --user {{ user }} {{ item }}
-    - runas: {{ devstack.local.username }}
+    - runas: {{ devstack.local.stack_user }}
     - onlyif: source ~/openrc admin admin && openstack {{ feature }} list --user {{ user }}
     # output_loglevel: quiet
 
@@ -27,7 +27,7 @@ openstack devstack {{ feature }} add prerequisite {{ item }} {{ user }}:
 openstack devstack {{ feature }} add prerequisite {{ item }} {{ group }}:
   cmd.run:
     - name: source ~/openrc admin admin && openstack {{ feature }} add {{- getcmd(itemdata['options']) -}} --group {{ group }} {{ item }}
-    - runas: {{ devstack.local.username }}
+    - runas: {{ devstack.local.stack_user }}
     - onlyif: source ~/openrc admin admin && openstack {{ feature }} list --group {{ group }}
     # output_loglevel: quiet
 

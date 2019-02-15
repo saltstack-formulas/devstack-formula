@@ -20,12 +20,12 @@
 devstack:
   hide_output: False    #view output from stack.sh
   local:
-    username: stack
+    stack_user: stack
     os_password: {{ os_password }}
     os_project_name: {{ os_project_name }}
     admin_password: {{ os_password }}
     git_branch: 'stable/rocky'
-    enabled_services: {{ enabled_services }}
+    enabled_services: {{ devstack_enabled_services }}
     host_ipv4: {{ host_ipv4 }}
     host_ipv6: {{ host_ipv6 }}
     service_host: {{ host_ipv4 or host_ipv6 }}
