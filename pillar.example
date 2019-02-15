@@ -1,15 +1,18 @@
 #SITE & RELEASE SPECIFIC DATA
 
-    {% set devstack_yoursvc_name = 'Keystone' %}
-    {% set devstack_enabled_services = 'mysql,key' %}
-    {% set devstack_yoursvc_version = 'v0.2.0' %}
-    {% set devstack_yoursvc_port = '50040' %}
-    {% set devstack_yoursvc_type = devstack_yoursvc_name %}
-    {% set devstack_yoursvc_endpoint = devstack_yoursvc_name ~ devstack_yoursvc_version %}
-    {% set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
-    {% set db_host = '127.0.0.1' %}  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
-    {% set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
-    {% set os_password = 'devstack' %}
+    {%- set yoursvc_name = 'keystone' %}
+    {%- set yoursvc_version = 'v0.2.0' %}
+    {%- set yoursvc_port = '50040' %}
+    {%- set yoursvc_type = yoursvc_name %}
+    {%- set yoursvc_region = 'RegionOne' %}
+    {%- set yoursvc_endpoint = yoursvc_name ~ yoursvc_version %}
+    {%- set enabled_services = 'mysql,key' %}
+
+    {%- set os_project_name = 'service' %}
+    {%- set os_password = 'devstack' %}
+    {%- set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
+    {%- set db_host = '127.0.0.1' %}  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
+    {%- set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
 
 
 #DATA DICTIONARY
@@ -18,9 +21,11 @@ devstack:
   hide_output: False    #view output from stack.sh
   local:
     stack_user: stack
+    os_password: {{ os_password }}
+    os_project_name: {{ os_project_name }}
+    admin_password: {{ os_password }}
     git_branch: 'stable/rocky'
     enabled_services: {{ devstack_enabled_services }}
-    os_password: {{ os_password }}
     host_ipv4: {{ host_ipv4 }}
     host_ipv6: {{ host_ipv6 }}
     service_host: {{ host_ipv4 or host_ipv6 }}
@@ -32,11 +37,11 @@ devstack:
   cli:
     user:
       create:
-        {{ devstack_yoursvc_name }}:
+        {{ yoursvc_name }}:
           options:
             domain: default
             password: {{ os_password }}
-            project: service
+            project: {{ os_project_name }}
             enable: True
       delete:
         demo:
@@ -53,7 +58,7 @@ devstack:
       add user:
         service:
           target:
-            - {{ devstack_yoursvc_name }}
+            - {{ yoursvc_name }}
         admins:
           options:
             domain: default
@@ -63,35 +68,35 @@ devstack:
       add:
         admin:
           options:
-            project: service
+            project: {{ os_project_name }}
           user:
-            - {{ devstack_yoursvc_name }}
+            - {{ yoursvc_name }}
         service:
           options:
-            project: service
+            project: {{ os_project_name }}
           group:
             - service
     service:
       create:
-        {{ devstack_yoursvc_type }}:
+        {{ yoursvc_type }}:
           options:
-            name: {{ devstack_yoursvc_name }}
+            name: {{ yoursvc_name }}
             type: identity
-            description: {{ devstack_yoursvc_name }} Service
+            description: {{ yoursvc_name }} Service
             enable: True
     endpoint:
       create:
-        '{{ devstack_yoursvc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
+        '{{ yoursvc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ yoursvc_region }}
             enable: True
-        '{{ devstack_yoursvc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
+        '{{ yoursvc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ yoursvc_region }}
             enable: True
-        '{{ devstack_yoursvc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ devstack_yoursvc_port }}/{{ devstack_yoursvc_version }}/%\(tenant_id\)s':
+        '{{ yoursvc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
           options:
-            region: RegionOne
+            region: {{ yoursvc_region }}
             enable: True
     project:
       delete:
