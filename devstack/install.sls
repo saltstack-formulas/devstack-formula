@@ -90,6 +90,7 @@ openstack devstack run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
+      - LOGFILE: /tmp/salt_stack.sh.log
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}
       - HOST_NAME: {{'' if 'host_name' not in devstack.local else devstack.local.host_name}}
