@@ -11,3 +11,4 @@ Debian:
     - git
     - bridge-utils
     - apache2
+    - python3-distutils
