@@ -12,3 +12,4 @@ Debian:
     - bridge-utils
     - apache2
     - python3-distutils
+    - python-pip           ##sigh
