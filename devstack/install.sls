@@ -82,7 +82,7 @@ openstack devstack nginx conflict handler before stack.sh:
     - names:
       - systemctl stop nginx
       - touch /tmp/devstack_stopped_nginx
-    - onlyif: systemctl status ngin-x
+    - onlyif: systemctl status nginx
 
 openstack devstack run stack:
   cmd.run:
