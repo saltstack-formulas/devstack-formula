@@ -84,6 +84,20 @@ openstack devstack nginx conflict handler before stack.sh:
       - touch /tmp/devstack_stopped_nginx
     - onlyif: systemctl status nginx
 
+openstack devstack hard dependencies:
+  ## workaround issues in https://bugs.launchpad.net/devstack/+bug/1806387/
+  pkg.removed:
+    - names:
+      - python-yaml
+    - require_in:
+      - cmd: openstack devstack run stack
+  cmd.run:
+    - names:
+      - wget https://bootstrap.pypa.io/get-pip.py
+      - python2.7 get-pip.py
+    - require_in:
+      - cmd: openstack devstack run stack
+
 openstack devstack run stack:
   cmd.run:
     - names:
