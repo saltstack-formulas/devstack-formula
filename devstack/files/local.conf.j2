@@ -22,12 +22,11 @@ GIT_BRANCH=${GIT_BRANCH:-{{ "master" if not devstack.local.git_branch else devst
 RECLONE={{ devstack.local.reclone or "no" }}
 
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter ..
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or devstack.local.os_password or "nomoresecret" }}}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{'stackdb' if 'database_password' not in devstack.local else devstack.local.database_password }}}
+RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{'stackqueue' if 'rabbit_password' not in devstack else devstack.local.rabbit_password }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{ devstack.local.database_password or devstack.local.os_password or "stackdb" }}}
-RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password or devstack.local.os_password or "stackqueue" }}}
-SERVICE_PASSWORD=${ADMIN_PASSWORD}
-SERVICE_TOKEN=${SERVICE_TOKEN:-{{ devstack.local.service_token or devstack.local.os_password or "nomoresecret"}}}
+SERVICE_TOKEN=${SERVICE_TOKEN:-{{'nomoresecret' if 'service_token' not in devstack.local else devstack.local.service_token }}}
 
 # Logging
 # -------
@@ -81,4 +80,4 @@ ODL_MGR_IP=${HOST_IP:-'127.0.0.1' }}}
 # Used by openrc
 #---------------
 # Ref: https://docs.openstack.org/devstack/latest/configuration.html#local-conf
-OS_PASSWORD=${OS_PASSWORD:-{{ devstack.local.os_password or "$ADMIN_PASSWORD" }}}
+OS_PASSWORD=${OS_PASSWORD:-{{'devstack' if 'os_password' not in devstack.local else devstack.local.os_password }}}

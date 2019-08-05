@@ -92,18 +92,19 @@ openstack devstack run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
-      - LOGFILE: /tmp/salt_stack.sh.log
+      - LOGFILE: /tmp/devstack/salt_stack.sh.log
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}
       - HOST_NAME: {{'' if 'host_name' not in devstack.local else devstack.local.host_name}}
       - DATABASE_HOST: {{'127.0.0.1' if 'db_host' not in devstack.local else devstack.local.db_host}}
-      - ADMIN_PASSWORD: {{'devstack' if 'admin_password' not in devstack.local else devstack.local.admin_password}}
       - OS_USERNAME: {{'stack' if 'os_username' not in devstack.local else devstack.local.os_username}}
-      - OS_PASSWORD: {{'devstack' if 'os_password' not in devstack.local else devstack.local.os_password}}
-      - DATABASE_PASSWORD: {{'devstack' if 'db_password' not in devstack.local else devstack.local.db_password}}
-      - RABBIT_PASSWORD: {{'devstack' if 'rabbit_password' not in devstack.local else devstack.local.rabbit_password}}
-      - SERVICE_PASSWORD: {{'devstack' if 'service_password' not in devstack.local else devstack.local.service_password}}
-      - OS_PROJECT_NAME: {{'service' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
+      - OS_PROJECT_NAME: ${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
+      - OS_PASSWORD: ${OS_PASSWORD:-{{'devstack' if 'os_password' not in devstack.local else devstack.local.os_password }}}
+      - ADMIN_PASSWORD: ${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}}
+      - DATABASE_PASSWORD: ${DATABASE_PASSWORD:-{{'stackdb' if 'database_password' not in devstack.local else devstack.local.database_password }}}
+      - RABBIT_PASSWORD: ${RABBIT_PASSWORD:-{{'stackqueue' if 'rabbit_password' not in devstack else devstack.local.rabbit_password }}}
+      - SERVICE_PASSWORD: ${SERVICE_PASSWORD:-{{'nomoresecret' if 'service_password' not in devstack.local else devstack.local.service_password}}
+      - SERVICE_TOKEN: ${SERVICE_TOKEN:-{{'nomoresecret' if 'service_token' not in devstack.local else devstack.local.service_token }}}
   file.managed:
     - name: {{ devstack.dir.dest }}/openrc
     - source: salt://devstack/files/openrc.j2
