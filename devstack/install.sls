@@ -86,7 +86,9 @@ openstack devstack nginx conflict handler before stack.sh:
 
 openstack devstack run stack:
   cmd.run:
-    - name: {{ devstack.dir.dest }}/stack.sh
+    - names:
+      - git config --global url."https://".insteadOf git://   ##proxy workaround
+      - {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
