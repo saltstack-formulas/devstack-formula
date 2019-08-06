@@ -24,6 +24,7 @@ devstack:
     git_url: 'https://git.openstack.org/openstack-dev/devstack'
     reclone: no
     host_name: {{ grains.host }}
+    db_host: {{ grains.host }}
     enable_httpd_mod_wsgi_services: false
     keystone_use_mod_wsgi: false
     logfile: stack.sh.log
