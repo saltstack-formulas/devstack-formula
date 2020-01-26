@@ -78,11 +78,13 @@ openstack devstack configure required directories:
       - cmd: openstack devstack run stack
 
 openstack devstack nginx conflict handler before stack.sh:
+  pkg.installed:
+    - name: nc
   cmd.run:
     - names:
       - systemctl stop nginx
       - touch /tmp/devstack_stopped_nginx
-    - onlyif: systemctl status nginx
+    - onlyif: nc -z localhost 80 && systemctl status nginx
 
 openstack devstack hard dependencies:
   ## workaround issues in https://bugs.launchpad.net/devstack/+bug/1806387/
