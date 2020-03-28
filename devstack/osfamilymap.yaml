@@ -12,3 +12,7 @@ Debian:
     - bridge-utils
     - apache2
     - python3-distutils
+
+FreeBSD:
+  pkgs:
+    - git
