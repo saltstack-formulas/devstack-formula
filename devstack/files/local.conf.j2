@@ -66,7 +66,13 @@ Q_USE_SECGROUP=${Q_USE_SECGROUP:-True}
 FLOATING_RANGE=${FLOATING_RANGE:-}
 IPV4_ADDRS_SAFE_TO_USE=${IPV4_ADDRS_SAFE_TO_USE:-}
 Q_FLOATING_ALLOCATION_POOL=${Q_FLOATING_ALLOCATION_POOL:-}
+
+    {%- if "ip4_gw" in grains %}
 PUBLIC_NETWORK_GATEWAY=${PUBLIC_NETWORK_GATEWAY:-{{ grains.ip4_gw }}}
+    {%- elif grains.os_family == 'FreeBSD' %}
+        {%- set ip4_gw = salt['cmd.run']("netstat -r | grep ^default | awk '{print $2}'") %}
+PUBLIC_NETWORK_GATEWAY=${PUBLIC_NETWORK_GATEWAY:-{{ ip4_gw }}}
+    {%- endif %}
 PUBLIC_INTERFACE=${PUBLIC_INTERFACE:-}
 
 # Open vSwitch provider networking configuration
