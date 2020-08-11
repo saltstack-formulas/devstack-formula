@@ -86,17 +86,19 @@ openstack devstack nginx conflict handler before stack.sh:
       - touch /tmp/devstack_stopped_nginx
     - onlyif: nc -z localhost 80 && systemctl status nginx
 
-openstack devstack hard dependencies:
-  ## workaround issues in https://bugs.launchpad.net/devstack/+bug/1806387/
-  pkg.removed:
+openstack devstack hard dependencies workarounds:
+  ## https://bugs.launchpad.net/devstack/+bug/1806387/
+  ## https://www.edureka.co/community/65075/error-cannot-uninstall-simplejson-not-able-install-ubuntu
+  pkg.purged:
     - names:
       - python-yaml
+      - python3-simplejson
     - require_in:
       - cmd: openstack devstack run stack
   cmd.run:
     - names:
       - wget https://bootstrap.pypa.io/get-pip.py
-      - python2.7 get-pip.py
+      - python get-pip.py
     - require_in:
       - cmd: openstack devstack run stack
 
