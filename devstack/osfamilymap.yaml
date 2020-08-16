@@ -2,6 +2,7 @@
 RedHat:
   pip_pkg: python2-pip
   pkgs:
+    - nc
     - redhat-lsb-core
   pips:
     - pysaml2
@@ -11,6 +12,7 @@ Debian:
     - git
     - bridge-utils
     - apache2
+    - netcat
     - python3-distutils
 
 FreeBSD:
