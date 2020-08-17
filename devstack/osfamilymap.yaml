@@ -1,13 +1,16 @@
 
 RedHat:
-  pip_pkg: python2-pip
+  pip_pkg: python3-pip
   pkgs:
     - nc
     - redhat-lsb-core
+    - python3-devel
   pips:
+    - python-memcached
     - pysaml2
 
 Debian:
+  pip_pkg: python3-pip
   pkgs:
     - git
     - bridge-utils

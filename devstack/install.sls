@@ -85,16 +85,6 @@ openstack devstack nginx conflict handler before stack.sh:
     - onlyif: which nc && nc -z localhost 80 && systemctl status nginx
 
 openstack devstack hard dependencies workarounds:
-               {%- if grains.os_family == 'Debian' %}
-  ## https://bugs.launchpad.net/devstack/+bug/1806387/
-  ## https://www.edureka.co/community/65075/error-cannot-uninstall-simplejson-not-able-install-ubuntu
-  pkg.purged:
-    - names:
-      - python3-simplejson
-      - python3-psutil
-    - require_in:
-      - cmd: openstack devstack run stack
-               {%- endif %}
   cmd.run:
     - names:
       - wget https://bootstrap.pypa.io/get-pip.py
@@ -110,6 +100,9 @@ openstack devstack run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
+      - VIRTUALENV_CMD: {{ devstack.local.virtualenv_cmd }}
+      - USE_VENV: {{ devstack.local.use_venv }}
+      - DEST: {{ devstack.dir.dest }}
       - LOGFILE: /tmp/devstack/salt_stack.sh.log
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}

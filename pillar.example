@@ -24,7 +24,7 @@ devstack:
     os_password: {{ os_password }}
     os_project_name: {{ os_project_name }}
     admin_password: {{ os_password }}
-    git_branch: 'stable/rocky'
+    git_branch: 'stable/ussuri'
     enabled_services: {{ enabled_services }}
     host_ipv4: {{ host_ipv4 }}
     host_ipv6: {{ host_ipv6 }}

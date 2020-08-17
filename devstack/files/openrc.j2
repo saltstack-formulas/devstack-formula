@@ -12,7 +12,7 @@
 ### (a) credentials are not passed as environment variables.
 ### (b) credentials are not passed as script arguments.
 
-OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
+OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}}
 OS_USERNAME=${OS_USERNAME:-{{'demo' if 'os_username' not in devstack.local else devstack.local.os_username }}}
 ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}} 
 

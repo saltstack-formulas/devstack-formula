@@ -20,7 +20,7 @@ devstack:
     enabled_services:
     sudoers_file: /etc/sudoers.d/50_devstack_user
     git_base: 'https://git.openstack.org'
-    git_branch: 'stable/rocky'
+    git_branch: 'stable/ussuri'
     git_url: 'https://git.openstack.org/openstack-dev/devstack'
     reclone: no
     host_name: {{ grains.host }}
@@ -30,7 +30,9 @@ devstack:
     logfile: stack.sh.log
     logdays:
     log_color:
+    use_venv: false
     verbose:
+    virtualenv_cmd: python3 -m venv
     enable_debug_log_level:
     enable_verbose_log_level:
 

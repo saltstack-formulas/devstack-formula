@@ -4,6 +4,7 @@
 #####################
 
 [[local|localrc]]
+USE_PYTHON3=True
 HOST_IP=${HOST_IP:-{{ devstack.local.host_ipv4 }}}
 HOST_IPV6=${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
 HOST_NAME={{ grains.host if not devstack.local.host_name else devstack.local.host_name }}
