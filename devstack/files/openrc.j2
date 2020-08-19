@@ -8,14 +8,7 @@
 #   Set ADMIN_PASSWORD to set the password for 'admin' and 'demo'
 
 ########################################################################
-### Managed by Salt if
-### (a) credentials are not passed as environment variables.
-### (b) credentials are not passed as script arguments.
-
-OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}}
-OS_USERNAME=${OS_USERNAME:-{{'demo' if 'os_username' not in devstack.local else devstack.local.os_username }}}
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}} 
-
+### Managed by Salt if credentials are not pased (environ vars or args)
 ########################################################################
 
 # NOTE: support for the old NOVA_* novaclient environment variables has
@@ -51,18 +44,19 @@ source $RC_DIR/lib/tls
 # referenced, but in all cases this just means **project**.  We will
 # warn if we need to turn on legacy **tenant** support to have a
 # working environment.
-export OS_PROJECT_NAME=${OS_PROJECT_NAME:-demo}
+export OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{'demo' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}}
 
 echo "WARNING: setting legacy OS_TENANT_NAME to support cli tools."
 export OS_TENANT_NAME=$OS_PROJECT_NAME
 
 # In addition to the owning entity (project), nova stores the entity performing
 # the action as the **user**.
-export OS_USERNAME=${OS_USERNAME:-demo}
+export OS_USERNAME=${OS_USERNAME:-{{'demo' if 'os_username' not in devstack.local else devstack.local.os_username }}}
 
 # With Keystone you pass the keystone password instead of an api key.
 # Recent versions of novaclient use OS_PASSWORD instead of NOVA_API_KEYs
 # or NOVA_PASSWORD.
+export ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'secret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}}
 export OS_PASSWORD=${ADMIN_PASSWORD:-secret}
 
 # Region

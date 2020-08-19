@@ -72,8 +72,9 @@ openstack devstack configure local_conf:
 openstack devstack configure required directories:
   cmd.run:
     - names:
-      - mkdir -p {{ devstack.dir.tmp }}/devstack
+      - mkdir -p {{ devstack.dir.tmp }}/devstack {{devstack.dir.dest}}/.cache
       - chown -R {{devstack.local.stack_user}}:{{devstack.local.stack_user}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
+      - chmod +t {{devstack.dir.dest}}/.cache
     - require_in:
       - cmd: openstack devstack run stack
 
@@ -84,14 +85,6 @@ openstack devstack nginx conflict handler before stack.sh:
       - touch /tmp/devstack_stopped_nginx
     - onlyif: which nc && nc -z localhost 80 && systemctl status nginx
 
-openstack devstack hard dependencies workarounds:
-  cmd.run:
-    - names:
-      - wget https://bootstrap.pypa.io/get-pip.py
-      - python get-pip.py
-    - require_in:
-      - cmd: openstack devstack run stack
-
 openstack devstack run stack:
   cmd.run:
     - names:
@@ -100,9 +93,6 @@ openstack devstack run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
-      - VIRTUALENV_CMD: {{ devstack.local.virtualenv_cmd }}
-      - USE_VENV: {{ devstack.local.use_venv }}
-      - DEST: {{ devstack.dir.dest }}
       - LOGFILE: /tmp/devstack/salt_stack.sh.log
       - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 }}
