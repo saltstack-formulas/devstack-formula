@@ -29,11 +29,11 @@
 
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter
 # values for them by ``stack.sh``and they will be added to ``local.conf``.
-ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{'stackdb' if 'database_password' not in devstack.local else devstack.local.database_password }}}
-RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{'stackqueue' if 'rabbit_password' not in devstack else devstack.local.rabbit_password }}}
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'devstack' if not devstack.local.admin_password else devstack.local.admin_password }}}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{'stackdb' if not devstack.local.database_password else devstack.local.database_password }}}
+RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{'stackqueue' if not devstack.local.rabbit_password else devstack.local.rabbit_password }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
-SERVICE_TOKEN=${SERVICE_TOKEN:-{{'nomoresecret' if 'service_token' not in devstack.local else devstack.local.service_token }}}
+SERVICE_TOKEN=${SERVICE_TOKEN:-{{'devstack' if 'service_token' not in devstack.local else devstack.local.service_token }}}
 
 # ``HOST_IP`` and ``HOST_IPV6`` should be set manually for best results if
 # the NIC configuration of the host is unusual, i.e. ``eth1`` has the default

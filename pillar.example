@@ -18,6 +18,8 @@
 #DATA DICTIONARY
 
 devstack:
+  pkgs_purge:
+    - python3-simplejson
   hide_output: False    #view output from stack.sh
   local:
     stack_user: stack

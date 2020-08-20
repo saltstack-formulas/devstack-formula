@@ -1,7 +1,7 @@
 
 RedHat:
   pip_pkg: python3-pip
-  pkgs:
+  pkgs_add:
     - nc
     - redhat-lsb-core
     - python3-devel
@@ -11,7 +11,7 @@ RedHat:
 
 Debian:
   pip_pkg: python3-pip
-  pkgs:
+  pkgs_add:
     - git
     - bridge-utils
     - apache2
@@ -19,5 +19,5 @@ Debian:
     - python3-distutils
 
 FreeBSD:
-  pkgs:
+  pkgs_add:
     - git

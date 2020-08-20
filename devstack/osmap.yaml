@@ -1,6 +1,6 @@
 
 CentOS:
-  pkgs:
+  pkgs_add:
     - epel-release
 
 FreeBSD:

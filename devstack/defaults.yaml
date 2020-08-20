@@ -4,7 +4,8 @@ devstack:
   hide_output: True
   dir_mode: '0775'
   mode: '0644'
-  pkgs: ['git','bridge-utils',]
+  pkgs_add: ['git','bridge-utils',]
+  pkgs_purge: null
   pips: []
   pip_pkg: python-pip
   cli: {}

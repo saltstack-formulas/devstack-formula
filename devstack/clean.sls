@@ -8,13 +8,24 @@ include:
 
   {%- if salt['cmd.run']('getent passwd ' ~ devstack.local.stack_user, output_loglevel='quiet') %}
 
-openstack devstack check permissions:
-  cmd.run:
-    - name: chown -R {{devstack.local.stack_user}}:{{devstack.local.stack_user}} {{devstack.dir.dest}} {{devstack.dir.tmp}}/devstack
+openstack devstack clean check permissions:
+  file.directory:
+    - names:
+      - {{ devstack.dir.tmp }}
+      - {{ devstack.dir.dest }}
+      - {{ devstack.dir.dest }}/.cache   # workaround
+    - makedirs: True
+    - force: True
+    - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
+    - dir_mode: '0755'
+    - recurse:
+      - user
+      - mode
     - require_in:
-      - cmd: openstack devstack unstack
+      - cmd: openstack devstack clean unstack
 
-openstack devstack unstack:
+openstack devstack clean unstack:
   cmd.run:
     - name: sudo {{ devstack.dir.dest }}/unstack.sh | true
     - env:
@@ -23,10 +34,10 @@ openstack devstack unstack:
     - runas: {{ devstack.local.stack_user }}
     - onlyif: test -f {{devstack.local.sudoers_file}} && getent passwd {{devstack.local.stack_user}}
     - require_in:
-      - file: openstack devstack cleandown
-      - user: openstack devstack ensure user and group absent
+      - file: openstack devstack clean cleandown
+      - user: openstack devstack clean ensure user and group absent
 
-openstack devstack clean:
+openstack devstack clean clean:
   cmd.run:
     - name: sudo {{ devstack.dir.dest }}/clean.sh
     - env:
@@ -35,12 +46,12 @@ openstack devstack clean:
     - runas: {{ devstack.local.stack_user }}
     - onlyif: test -f {{devstack.local.sudoers_file}} && getent passwd {{devstack.local.stack_user}}
     - require_in:
-      - file: openstack devstack cleandown
-      - user: openstack devstack ensure user and group absent
+      - file: openstack devstack clean cleandown
+      - user: openstack devstack clean ensure user and group absent
 
   {%- endif %}
 
-openstack devstack cleandown:
+openstack devstack clean cleandown:
   user.absent:
     - name: {{ devstack.local.stack_user }}
     - purge: True
@@ -48,7 +59,7 @@ openstack devstack cleandown:
     - name: userdel -f -r {{ devstack.local.stack_user }}
     - onlyif: getent passwd {{ devstack.local.stack_user }}
     - onfail:
-      - user: openstack devstack cleandown
+      - user: openstack devstack clean cleandown
   group.absent:
     - name: {{ devstack.local.stack_user }}
   file.absent:
@@ -57,4 +68,4 @@ openstack devstack cleandown:
       - {{ devstack.dir.log }}/logs
       - {{ devstack.local.sudoers_file }}
     - require:
-      - user: openstack devstack ensure user and group absent
+      - user: openstack devstack clean ensure user and group absent
