@@ -100,19 +100,19 @@ openstack devstack install run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
-      - LOGFILE: {{ devstack.dir.tmp }}/salt_stack.sh.log
-      - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
-      - HOST_IPV6: {{ devstack.local.host_ipv6 }}
-      - HOST_NAME: {{'' if 'host_name' not in devstack.local else devstack.local.host_name}}
-      - DATABASE_HOST: {{'127.0.0.1' if 'db_host' not in devstack.local else devstack.local.db_host}}
-      - OS_USERNAME: {{ 'stack' if 'os_username' not in devstack.local else devstack.local.os_username}}
-      - OS_PROJECT_NAME: ${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
-      - OS_PASSWORD: ${OS_PASSWORD:-{{'devstack' if not devstack.local.os_password else devstack.local.os_password }}}
-      - ADMIN_PASSWORD: ${ADMIN_PASSWORD:-{{'devstack' if not devstack.local.os_password else devstack.local.os_password }}}
-      - SERVICE_PASSWORD: ${ADMIN_PASSWORD:-{{'devstack' if not devstack.local.admin_password else devstack.local.admin_password }}}
-      - DATABASE_PASSWORD: ${DATABASE_PASSWORD:-{{'devstack' if not devstack.local.database_password else devstack.local.database_password }}}
-      - RABBIT_PASSWORD: ${RABBIT_PASSWORD:-{{'stackqueue' if not devstack.local.rabbit_password else devstack.local.rabbit_password }}}
-      - SERVICE_TOKEN: ${SERVICE_TOKEN:-{{'devstack' if not devstack.local.service_token else devstack.local.service_token }}}
+      - LOGFILE: ${LOGDIR:-{{ devstack.dir.tmp }}}/salt_stack.sh.log
+      - HOST_IP: ${HOST_IP:-{{ devstack.local.host_ipv4 }}}
+      - HOST_IPV6: ${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
+      - HOST_NAME: ${HOST_NAME:-{{ devstack.local.host_name }}}
+      - DATABASE_HOST: ${DATABASE_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
+      - OS_USERNAME: ${OS_USERNAME:-{{ devstack.local.os_username }}}
+      - OS_PROJECT_NAME: ${OS_PROJECT_NAME:-{{ devstack.local.os_project_name }}}
+      - OS_PASSWORD: ${OS_PASSWORD:-{{ devstack.local.os_password }}}
+      - ADMIN_PASSWORD: ${ADMIN_PASSWORD:-{{ devstack.local.os_password }}}
+      - SERVICE_PASSWORD: ${ADMIN_PASSWORD:-{{ devstack.local.admin_password }}}
+      - DATABASE_PASSWORD: ${DATABASE_PASSWORD:-{{ devstack.local.database_password }}}
+      - RABBIT_PASSWORD: ${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password }}}
+      - SERVICE_TOKEN: ${SERVICE_TOKEN:-{{ devstack.local.service_token }}}
   file.managed:
     - name: {{ devstack.dir.dest }}/openrc
     - source: salt://devstack/files/openrc.j2

@@ -30,7 +30,7 @@
 # If the ``*_PASSWORD`` variables are not set here you will be prompted to enter
 # values for them by ``stack.sh``and they will be added to ``local.conf``.
 ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{'devstack' if not devstack.local.admin_password else devstack.local.admin_password }}}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{'stackdb' if not devstack.local.database_password else devstack.local.database_password }}}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-{{'devstack' if not devstack.local.database_password else devstack.local.database_password }}}
 RABBIT_PASSWORD=${RABBIT_PASSWORD:-{{'stackqueue' if not devstack.local.rabbit_password else devstack.local.rabbit_password }}}
 SERVICE_PASSWORD=${ADMIN_PASSWORD}
 SERVICE_TOKEN=${SERVICE_TOKEN:-{{'devstack' if 'service_token' not in devstack.local else devstack.local.service_token }}}
@@ -47,8 +47,8 @@ HOST_IPV6=${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
 
 HOST_NAME={{ grains.host if not devstack.local.host_name else devstack.local.host_name }}
 SERVICE_HOST=${SERVICE_HOST:-$HOST_IP}
-MYSQL_HOST=${MYSQL_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
 DATABASE_HOST=${DATABASE_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
+MYSQL_HOST=${MYSQL_HOST:-DATABASE_HOST}
 RABBIT_HOST=${RABBIT_HOST:-$HOST_IP}
 GLANCE_HOSTPORT=${GLANCE_HOSTPORT:-$HOST_IP:9292}
 

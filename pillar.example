@@ -19,7 +19,9 @@
 
 mysql:
   server:
-    root_password: {{ os_password }}
+    root_password: {{ os_password }}   # sync with devstack
+    mysqld:
+      bind_address: {{ db_host or host_ipv4 or "127.0.0.1" }}   # sync with devstack
 
 devstack:
   pkgs_purge:

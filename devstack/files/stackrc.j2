@@ -6,6 +6,7 @@
 ## Managed by Salt (Ussuri)
 ############################
 HOST_IP=${HOST_IP:-{{ devstack.local.host_ipv4 }}}
+SERVICE_HOST=${SERVICE_HOST:-HOST_IP}
 HOST_IPV6=${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
 
 # ensure we don't re-source this in the same environment
