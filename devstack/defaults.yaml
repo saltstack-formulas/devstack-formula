@@ -37,19 +37,20 @@ devstack:
     enable_debug_log_level:
     enable_verbose_log_level:
 
-    ### leave these blank here
-    database_password:
-    rabbit_password:
-    service_token:
-    cinder_branch:
-    horizon_branch:
-    keystone_branch:
-    keystoneclient_branch:
-    nova_branch:
-    novaclient_branch:
-    neutron_branch:
-    swift_branch:
-    glance_branch:
+    ### leave blank
+    database_password: null
+    rabbit_password: null
+    service_password: null
+    service_token: null
+    cinder_branch: null
+    horizon_branch: null
+    keystone_branch: null
+    keystoneclient_branch: null
+    nova_branch: null
+    novaclient_branch: null
+    neutron_branch: null
+    swift_branch: null
+    glance_branch: null
 
     ### commonly wanted openstack configuration variables ###
     os_project_name: admin

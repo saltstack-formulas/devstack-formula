@@ -1,18 +1,24 @@
 #SITE & RELEASE SPECIFIC DATA
 
+    {%- set enabled_services = 'mysql,key' %}
     {%- set yoursvc_name = 'keystone' %}
+    {%- set yoursvc_domain = 'default' %}
     {%- set yoursvc_version = 'v0.2.0' %}
     {%- set yoursvc_port = '50040' %}
-    {%- set yoursvc_type = yoursvc_name %}
     {%- set yoursvc_region = 'RegionOne' %}
     {%- set yoursvc_endpoint = yoursvc_name ~ yoursvc_version %}
-    {%- set enabled_services = 'mysql,key' %}
+    {%- set yoursvc_type = yoursvc_endpoint %}
+    {%- set yoursvc_endpath = yoursvc_name ~ '/' ~ yoursvc_version %}
 
-    {%- set os_project_name = 'default' %}
+    {%- set os_project_name = 'admin' %}
     {%- set os_password = 'devstack' %}
     {%- set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
-    {%- set db_host = '127.0.0.1' %}  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
     {%- set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
+
+    {# mysql host must be 127.0.0.1 #}
+    {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
+    {%- set db_host = '127.0.0.1' %}
+    {# https://bugs.launchpad.net/devstack/+bug/1892531 #}
 
 
 #DATA DICTIONARY
@@ -44,12 +50,16 @@ devstack:
   dir:
     tmp: /tmp/devstack	{# not sure why centos wants this? #}
 
+  ### openstack cli ###
   cli:
+
+    # User
     user:
       create:
         {{ yoursvc_name }}:
           options:
-            domain: default
+            domain: {{ yoursvc_domain }}
+            type: identity
             password: {{ os_password }}
             project: {{ os_project_name }}
             enable: True
@@ -60,20 +70,24 @@ devstack:
         alt_demo:
           options:
             domain: default
+
+    # Group
     group:
       create:
-        service:
+        {{ yoursvc_name }}:
           options:
-            domain: default
+            domain: {{ yoursvc_domain }}
       add user:
-        service:
+        {{ yoursvc_name }}:
           target:
             - {{ yoursvc_name }}
         admins:
           options:
-            domain: default
+            domain: {{ yoursvc_domain }}
           target:
-            - admin
+            - {{ os_project_name }}
+
+    # Role based authentication
     role:
       add:
         admin:
@@ -86,28 +100,36 @@ devstack:
             project: {{ os_project_name }}
           group:
             - service
+
+    # Service
     service:
       create:
         {{ yoursvc_type }}:
           options:
             name: {{ yoursvc_name }}
-            type: identity
             description: {{ yoursvc_name }} Service
             enable: True
+
+    # Service Endpoint
     endpoint:
       create:
-        '{{ yoursvc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
+        {{ yoursvc_endpoint }} public https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_endpath }}/%\(tenant_id\)s:
           options:
+            type: {{ yoursvc_type }}
             region: {{ yoursvc_region }}
             enable: True
-        '{{ yoursvc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
+        {{ yoursvc_endpoint }} internal https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_endpath }}/%\(tenant_id\)s:
           options:
+            type: {{ yoursvc_type }}
             region: {{ yoursvc_region }}
             enable: True
-        '{{ yoursvc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_port }}/{{ yoursvc_version }}/%\(tenant_id\)s':
+        {{ yoursvc_endpoint }} admin https://{{ host_ipv4 or host_ipv6 }}/{{ yoursvc_endpath }}/%\(tenant_id\)s:
           options:
+            type: {{ yoursvc_type }}
             region: {{ yoursvc_region }}
             enable: True
+
+    # Delete some presupplied stuff
     project:
       delete:
         demo:

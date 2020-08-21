@@ -81,6 +81,15 @@ openstack devstack install before stack.sh:
       - systemctl stop nginx
       - touch {{ devstack.dir.tmp }}/nginx_paused
     - onlyif: which nc && nc -z localhost 80 && systemctl status nginx 2>/dev/null
+  file.replace:
+    # https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
+    - name: /usr/sbin/policy-rc.d
+    - pattern: '101'
+    - repl: '0'
+    - backup: false
+    - onlyif: test -f /usr/sbin/policy-rc.d
+    - require_in:
+      - cmd: openstack devstack install run stack
 
 openstack devstack install run stack:
       {%- if 'pkgs_purge' in devstack and devstack.pkgs_purge %}
@@ -100,19 +109,19 @@ openstack devstack install run stack:
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
-      - LOGFILE: ${LOGDIR:-{{ devstack.dir.tmp }}}/salt_stack.sh.log
-      - HOST_IP: ${HOST_IP:-{{ devstack.local.host_ipv4 }}}
-      - HOST_IPV6: ${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
-      - HOST_NAME: ${HOST_NAME:-{{ devstack.local.host_name }}}
-      - DATABASE_HOST: ${DATABASE_HOST:-{{ devstack.local.db_host or '127.0.0.1' }}}
-      - OS_USERNAME: ${OS_USERNAME:-{{ devstack.local.os_username }}}
-      - OS_PROJECT_NAME: ${OS_PROJECT_NAME:-{{ devstack.local.os_project_name }}}
-      - OS_PASSWORD: ${OS_PASSWORD:-{{ devstack.local.os_password }}}
-      - ADMIN_PASSWORD: ${ADMIN_PASSWORD:-{{ devstack.local.os_password }}}
-      - SERVICE_PASSWORD: ${ADMIN_PASSWORD:-{{ devstack.local.admin_password }}}
-      - DATABASE_PASSWORD: ${DATABASE_PASSWORD:-{{ devstack.local.database_password }}}
-      - RABBIT_PASSWORD: ${RABBIT_PASSWORD:-{{ devstack.local.rabbit_password }}}
-      - SERVICE_TOKEN: ${SERVICE_TOKEN:-{{ devstack.local.service_token }}}
+      - LOGFILE: {{ devstack.dir.tmp }}/salt_stack.sh.log
+      - HOST_IP: {{ devstack.local.host_ipv4 or '127.0.0.1' }}
+      - HOST_IPV6: {{ devstack.local.host_ipv6 or '::1' }}
+      - HOST_NAME: {{ devstack.local.host_name or devstack.local.host_ipv4 or '127.0.0.1' }}
+      - DATABASE_HOST: {{ devstack.local.db_host or '127.0.0.1' }}
+      - OS_USERNAME: {{ devstack.local.os_username or 'admin' }}
+      - OS_PROJECT_NAME: {{ devstack.local.os_project_name or 'admin' }}
+      - OS_PASSWORD: {{ devstack.local.os_password or 'devstack' }}
+      - ADMIN_PASSWORD: {{ devstack.local.admin_password or 'devstack' }}
+      - DATABASE_PASSWORD: {{ devstack.local.database_password or 'devstack' }}
+      - RABBIT_PASSWORD: {{ devstack.local.rabbit_password or 'stackqueue' }}
+      - SERVICE_PASSWORD: {{ devstack.local.service_password or 'devstack' }}
+      - SERVICE_TOKEN: {{ devstack.local.service_token or 'devstack' }}
   file.managed:
     - name: {{ devstack.dir.dest }}/openrc
     - source: salt://devstack/files/openrc.j2
