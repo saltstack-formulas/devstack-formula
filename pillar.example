@@ -17,6 +17,10 @@
 
 #DATA DICTIONARY
 
+mysql:
+  server:
+    root_password: {{ os_password }}
+
 devstack:
   pkgs_purge:
     - python3-simplejson
