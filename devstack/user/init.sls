@@ -2,7 +2,7 @@
 # vim: ft=sls
 {% from "devstack/map.jinja" import devstack with context %}
 
-openstack devstack ensure user and group exist:
+openstack devstack user ensure user and group exist:
   group.present:
     - name: {{ devstack.local.stack_user }}
   user.present:
@@ -14,7 +14,7 @@ openstack devstack ensure user and group exist:
     - groups:
       - {{ devstack.local.stack_user }}
     - require:
-      - group: openstack devstack ensure user and group exist
+      - group: openstack devstack user ensure user and group exist
   file.directory:
     - names:
       - {{ devstack.dir.dest }}
@@ -27,7 +27,7 @@ openstack devstack ensure user and group exist:
       - group
       - mode
 
-openstack devstack ensure sudo rights:
+openstack devstack user ensure sudo rights:
   file.managed:
     - name: {{ devstack.local.sudoers_file }}
     - source: salt://devstack/files/devstack.sudoers
@@ -39,4 +39,4 @@ openstack devstack ensure sudo rights:
     - context:
       stack_user: {{ devstack.local.stack_user }}
     - require:
-      - user: openstack devstack ensure user and group exist
+      - user: openstack devstack user ensure user and group exist

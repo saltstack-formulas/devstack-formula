@@ -1,8 +1,7 @@
 
 CentOS:
-  pkgs:
+  pkgs_add:
     - epel-release
-  pip_pkg: python2-pip
 
 FreeBSD:
   pip_pkg: devel/py-pip

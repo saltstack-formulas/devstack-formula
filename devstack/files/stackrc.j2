@@ -2,10 +2,11 @@
 #
 # stackrc
 #
-####################
-## Managed by Salt
-####################
+############################
+## Managed by Salt (Ussuri)
+############################
 HOST_IP=${HOST_IP:-{{ devstack.local.host_ipv4 }}}
+SERVICE_HOST=${SERVICE_HOST:-$HOST_IP}
 HOST_IPV6=${HOST_IPV6:-{{ devstack.local.host_ipv6 }}}
 
 # ensure we don't re-source this in the same environment
@@ -20,7 +21,7 @@ source $RC_DIR/functions
 
 # Set the target branch. This is used so that stable branching
 # does not need to update each repo below.
-TARGET_BRANCH=master
+TARGET_BRANCH=${TARGET_BRANCH:-{{ devstack.local.git_branch }}}
 
 # Cycle trailing projects need to branch later than the others.
 TRAILING_TARGET_BRANCH=master
@@ -70,11 +71,11 @@ if ! isset ENABLED_SERVICES ; then
     # Keystone - nothing works without keystone
     ENABLED_SERVICES=key
     # Nova - services to support libvirt based openstack clouds
-    ENABLED_SERVICES+=,n-api,n-cpu,n-cond,n-sch,n-novnc,n-cauth,n-api-meta
+    ENABLED_SERVICES+=,n-api,n-cpu,n-cond,n-sch,n-novnc,n-api-meta
     # Placement service needed for Nova
     ENABLED_SERVICES+=,placement-api,placement-client
     # Glance services needed for Nova
-    ENABLED_SERVICES+=,g-api,g-reg
+    ENABLED_SERVICES+=,g-api
     # Cinder
     ENABLED_SERVICES+=,c-sch,c-api,c-vol
     # Neutron
@@ -93,6 +94,15 @@ ENABLE_HTTPD_MOD_WSGI_SERVICES=True
 
 # Set the default Nova APIs to enable
 NOVA_ENABLED_APIS=osapi_compute,metadata
+
+# allow local overrides of env variables, including repo config
+if [[ -f $RC_DIR/localrc ]]; then
+    # Old-style user-supplied config
+    source $RC_DIR/localrc
+elif [[ -f $RC_DIR/.localrc.auto ]]; then
+    # New-style user-supplied config extracted from local.conf
+    source $RC_DIR/.localrc.auto
+fi
 
 # CELLSV2_SETUP - how we should configure services with cells v2
 #
@@ -132,35 +142,24 @@ if [[ -r $RC_DIR/.localrc.password ]]; then
 fi
 
 # Control whether Python 3 should be used at all.
-export USE_PYTHON3=$(trueorfalse False USE_PYTHON3)
-
-# Control whether Python 3 is enabled for specific services by the
-# base name of the directory from which they are installed. See
-# enable_python3_package to edit this variable and use_python3_for to
-# test membership.
-export ENABLED_PYTHON3_PACKAGES="nova,glance,cinder,uwsgi,python-openstackclient,openstacksdk"
-
-# Explicitly list services not to run under Python 3. See
-# disable_python3_package to edit this variable.
-export DISABLED_PYTHON3_PACKAGES=""
+export USE_PYTHON3=$(trueorfalse True USE_PYTHON3)
 
 # When Python 3 is supported by an application, adding the specific
 # version of Python 3 to this variable will install the app using that
 # version of the interpreter instead of 2.7.
 _DEFAULT_PYTHON3_VERSION="$(_get_python_version python3)"
-export PYTHON3_VERSION=${PYTHON3_VERSION:-${_DEFAULT_PYTHON3_VERSION:-3.5}}
+export PYTHON3_VERSION=${PYTHON3_VERSION:-${_DEFAULT_PYTHON3_VERSION:-3}}
 
 # Just to be more explicit on the Python 2 version to use.
 _DEFAULT_PYTHON2_VERSION="$(_get_python_version python2)"
 export PYTHON2_VERSION=${PYTHON2_VERSION:-${_DEFAULT_PYTHON2_VERSION:-2.7}}
 
-# allow local overrides of env variables, including repo config
-if [[ -f $RC_DIR/localrc ]]; then
-    # Old-style user-supplied config
-    source $RC_DIR/localrc
-elif [[ -f $RC_DIR/.localrc.auto ]]; then
-    # New-style user-supplied config extracted from local.conf
-    source $RC_DIR/.localrc.auto
+# Create a virtualenv with this
+if [[ ${USE_PYTHON3} == True ]]; then
+    # Use the built-in venv to avoid more dependencies
+    export VIRTUALENV_CMD="python3 -m venv"
+else
+    export VIRTUALENV_CMD="virtualenv "
 fi
 
 # Default for log coloring is based on interactive-or-not.
@@ -241,11 +240,10 @@ WSGI_MODE=${WSGI_MODE:-"uwsgi"}
 # ------------
 
 # Base GIT Repo URL
-# Another option is https://git.openstack.org
 GIT_BASE=${GIT_BASE:-git://git.openstack.org}
 
 # The location of REQUIREMENTS once cloned
-REQUIREMENTS_DIR=$DEST/requirements
+REQUIREMENTS_DIR=${REQUIREMENTS_DIR:-$DEST/requirements}
 
 # Which libraries should we install from git instead of using released
 # versions on pypi?
@@ -263,7 +261,7 @@ REQUIREMENTS_DIR=$DEST/requirements
 # Setting the variable to 'ALL' will activate the download for all
 # libraries.
 
-DEVSTACK_SERIES="stein"
+DEVSTACK_SERIES="ussuri"
 
 ##############
 #
@@ -503,8 +501,8 @@ GITREPO["tooz"]=${TOOZ_REPO:-${GIT_BASE}/openstack/tooz.git}
 GITBRANCH["tooz"]=${TOOZ_BRANCH:-$TARGET_BRANCH}
 
 # pbr drives the setuptools configs
-GITREPO["pbr"]=${PBR_REPO:-${GIT_BASE}/openstack-dev/pbr.git}
-GITBRANCH["pbr"]=${PBR_BRANCH:-$TARGET_BRANCH}
+GITREPO["pbr"]=${PBR_REPO:-${GIT_BASE}/openstack/pbr.git}
+GITBRANCH["pbr"]=${PBR_BRANCH:-$BRANCHLESS_TARGET_BRANCH}
 
 
 ##################
@@ -524,10 +522,6 @@ GITBRANCH["glance_store"]=${GLANCE_STORE_BRANCH:-$TARGET_BRANCH}
 # keystone middleware
 GITREPO["keystonemiddleware"]=${KEYSTONEMIDDLEWARE_REPO:-${GIT_BASE}/openstack/keystonemiddleware.git}
 GITBRANCH["keystonemiddleware"]=${KEYSTONEMIDDLEWARE_BRANCH:-$TARGET_BRANCH}
-
-# s3 support for swift
-SWIFT3_REPO=${SWIFT3_REPO:-${GIT_BASE}/openstack/swift3.git}
-SWIFT3_BRANCH=${SWIFT3_BRANCH:-$TARGET_BRANCH}
 
 # ceilometer middleware
 GITREPO["ceilometermiddleware"]=${CEILOMETERMIDDLEWARE_REPO:-${GIT_BASE}/openstack/ceilometermiddleware.git}
@@ -563,7 +557,7 @@ GITDIR["ironic-lib"]=$DEST/ironic-lib
 
 # diskimage-builder tool
 GITREPO["diskimage-builder"]=${DIB_REPO:-${GIT_BASE}/openstack/diskimage-builder.git}
-GITBRANCH["diskimage-builder"]=${DIB_BRANCH:-$TARGET_BRANCH}
+GITBRANCH["diskimage-builder"]=${DIB_BRANCH:-$BRANCHLESS_TARGET_BRANCH}
 GITDIR["diskimage-builder"]=$DEST/diskimage-builder
 
 # neutron-lib library containing neutron stable non-REST interfaces
@@ -612,7 +606,7 @@ IRONIC_PYTHON_AGENT_BRANCH=${IRONIC_PYTHON_AGENT_BRANCH:-$TARGET_BRANCH}
 
 # a websockets/html5 or flash powered VNC console for vm instances
 NOVNC_REPO=${NOVNC_REPO:-https://github.com/novnc/noVNC.git}
-NOVNC_BRANCH=${NOVNC_BRANCH:-stable/v0.6}
+NOVNC_BRANCH=${NOVNC_BRANCH:-v1.0.0}
 
 # a websockets/html5 or flash powered SPICE console for vm instances
 SPICE_REPO=${SPICE_REPO:-http://anongit.freedesktop.org/git/spice/spice-html5.git}
@@ -634,6 +628,7 @@ VIRT_DRIVER=${VIRT_DRIVER:-$DEFAULT_VIRT_DRIVER}
 case "$VIRT_DRIVER" in
     ironic|libvirt)
         LIBVIRT_TYPE=${LIBVIRT_TYPE:-kvm}
+        LIBVIRT_CPU_MODE=${LIBVIRT_CPU_MODE:-none}
         if [[ "$os_VENDOR" =~ (Debian|Ubuntu) ]]; then
             # The groups change with newer libvirt. Older Ubuntu used
             # 'libvirtd', but now uses libvirt like Debian. Do a quick check
@@ -665,9 +660,6 @@ case "$VIRT_DRIVER" in
         ;;
 esac
 
-# By default, devstack will use Ubuntu Cloud Archive.
-ENABLE_UBUNTU_CLOUD_ARCHIVE=$(trueorfalse True ENABLE_UBUNTU_CLOUD_ARCHIVE)
-
 # Images
 # ------
 
@@ -690,7 +682,7 @@ ENABLE_UBUNTU_CLOUD_ARCHIVE=$(trueorfalse True ENABLE_UBUNTU_CLOUD_ARCHIVE)
 #IMAGE_URLS="http://smoser.brickies.net/ubuntu/ttylinux-uec/ttylinux-uec-amd64-11.2_2.6.35-15_1.tar.gz" # old ttylinux-uec image
 #IMAGE_URLS="http://download.cirros-cloud.net/${CIRROS_VERSION}/cirros-${CIRROS_VERSION}-${CIRROS_ARCH}-disk.img" # cirros full disk image
 
-CIRROS_VERSION=${CIRROS_VERSION:-"0.3.5"}
+CIRROS_VERSION=${CIRROS_VERSION:-"0.4.0"}
 CIRROS_ARCH=${CIRROS_ARCH:-"x86_64"}
 
 # Set default image based on ``VIRT_DRIVER`` and ``LIBVIRT_TYPE``, either of
@@ -741,10 +733,10 @@ fi
 EXTRA_CACHE_URLS=""
 
 # etcd3 defaults
-ETCD_VERSION=${ETCD_VERSION:-v3.2.17}
-ETCD_SHA256_AMD64=${ETCD_SHA256_AMD64:-"0a75e794502e2e76417b19da2807a9915fa58dcbf0985e397741d570f4f305cd"}
-ETCD_SHA256_ARM64=${ETCD_SHA256_ARM64:-"0ab4621c44c79d17d94e43bd184d0f23b763a3669056ce4ae2d0b2942410a98f"}
-ETCD_SHA256_PPC64=${ETCD_SHA256_PPC64:-"69e1279c4a2a52256b78d2a8dd23346ac46b836e678b971a459f2afaef3c275e"}
+ETCD_VERSION=${ETCD_VERSION:-v3.3.12}
+ETCD_SHA256_AMD64=${ETCD_SHA256_AMD64:-"dc5d82df095dae0a2970e4d870b6929590689dd707ae3d33e7b86da0f7f211b6"}
+ETCD_SHA256_ARM64=${ETCD_SHA256_ARM64:-"170b848ac1a071fe7d495d404a868a2c0090750b2944f8a260ef1c6125b2b4f4"}
+ETCD_SHA256_PPC64=${ETCD_SHA256_PPC64:-"77f807b1b51abbf51e020bb05bdb8ce088cb58260fcd22749ea32eee710463d3"}
 # etcd v3.2.x doesn't have anything for s390x
 ETCD_SHA256_S390X=${ETCD_SHA256_S390X:-""}
 # Make sure etcd3 downloads the correct architecture
@@ -772,12 +764,16 @@ else
 fi
 ETCD_PORT=${ETCD_PORT:-2379}
 ETCD_PEER_PORT=${ETCD_PEER_PORT:-2380}
-ETCD_DOWNLOAD_URL=${ETCD_DOWNLOAD_URL:-https://github.com/coreos/etcd/releases/download}
+ETCD_DOWNLOAD_URL=${ETCD_DOWNLOAD_URL:-https://github.com/etcd-io/etcd/releases/download}
 ETCD_NAME=etcd-$ETCD_VERSION-linux-$ETCD_ARCH
 ETCD_DOWNLOAD_FILE=$ETCD_NAME.tar.gz
 ETCD_DOWNLOAD_LOCATION=$ETCD_DOWNLOAD_URL/$ETCD_VERSION/$ETCD_DOWNLOAD_FILE
 # etcd is always required, so place it into list of pre-cached downloads
 EXTRA_CACHE_URLS+=",$ETCD_DOWNLOAD_LOCATION"
+
+# Cache settings
+CACHE_BACKEND=${CACHE_BACKEND:-"dogpile.cache.memcached"}
+MEMCACHE_SERVERS=${MEMCACHE_SERVERS:-"localhost:11211"}
 
 # Detect duplicate values in IMAGE_URLS
 for image_url in ${IMAGE_URLS//,/ }; do
@@ -857,11 +853,15 @@ IPV4_ADDRS_SAFE_TO_USE=${IPV4_ADDRS_SAFE_TO_USE:-10.0.0.0/22}
 FIXED_RANGE=${FIXED_RANGE:-$IPV4_ADDRS_SAFE_TO_USE}
 FIXED_NETWORK_SIZE=${FIXED_NETWORK_SIZE:-256}
 HOST_IP_IFACE=${HOST_IP_IFACE:-}
+HOST_IP=${HOST_IP:-}
+HOST_IPV6=${HOST_IPV6:-}
 
 HOST_IP=$(get_default_host_ip "$FIXED_RANGE" "$FLOATING_RANGE" "$HOST_IP_IFACE" "$HOST_IP" "inet")
 if [ "$HOST_IP" == "" ]; then
     die $LINENO "Could not determine host ip address.  See local.conf for suggestions on setting HOST_IP."
 fi
+
+HOST_IPV6=$(get_default_host_ip "" "" "$HOST_IP_IFACE" "$HOST_IPV6" "inet6")
 
 # Whether or not the port_security extension should be enabled for Neutron.
 NEUTRON_PORT_SECURITY=$(trueorfalse True NEUTRON_PORT_SECURITY)
@@ -930,7 +930,7 @@ RECREATE_KEYSTONE_DB=$(trueorfalse True RECREATE_KEYSTONE_DB)
 
 # Set up new logging defaults
 if [[ -z "${LOGDIR:-}" ]]; then
-    default_logdir=$DEST/logs
+    default_logdir={{ devstack.dir.log or "${DEST}/logs" }}
     if [[ -z "${LOGFILE:-}" ]]; then
         # Nothing is set, we need a default
         LOGDIR="$default_logdir"

@@ -6,23 +6,29 @@
 include:
   - .user
 
-openstack devstack ensure package dependencies:
+openstack devstack install ensure package dependencies:
   file.directory:
-    - name: {{ devstack.dir.tmp }}/devstack
+    - names:
+      - {{ devstack.dir.tmp }}
+      - {{ devstack.dir.dest }}
+      - {{ devstack.dir.dest }}/.cache   # workaround
     - makedirs: True
     - force: True
     - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
     - dir_mode: '0755'
     - recurse:
       - user
       - mode
+      {%- if 'pkgs_add' in devstack and devstack.pkgs_add %}
   pkg.installed:
     - names:
-      {%- for pkg in devstack.pkgs %}
+          {%- for pkg in devstack.pkgs_add %}
       - {{ pkg }}
-      {%- endfor %}
+          {%- endfor %}
+      {%- endif %}
 
-openstack devstack git cloned:
+openstack devstack install git cloned:
   git.latest:
     - name: {{ devstack.local.git_url }}
     - rev: {{ devstack.local.git_branch }}
@@ -40,10 +46,10 @@ openstack devstack git cloned:
         splay: 10
     {%- endif %}
     - require:
-      - user: openstack devstack ensure user and group exist
-      - pkg: openstack devstack ensure package dependencies
+      - user: openstack devstack user ensure user and group exist
+      - pkg: openstack devstack install ensure package dependencies
 
-openstack devstack configure stackrc:
+openstack devstack install configure stackrc:
   file.managed:
     - name: {{ devstack.dir.dest }}/stackrc
     - source: salt://devstack/files/stackrc.j2
@@ -55,9 +61,9 @@ openstack devstack configure stackrc:
     - context:
         devstack: {{ devstack|json }}
     - require_in:
-      - cmd: openstack devstack run stack
+      - cmd: openstack devstack install run stack
 
-openstack devstack configure local_conf:
+openstack devstack install configure local_conf:
   file.managed:
     - name: {{ devstack.dir.dest }}/local.conf
     - source: salt://devstack/files/local.conf.j2
@@ -69,61 +75,53 @@ openstack devstack configure local_conf:
     - context:
         devstack: {{ devstack|json }}
 
-openstack devstack configure required directories:
-  cmd.run:
-    - names:
-      - mkdir -p {{ devstack.dir.tmp }}/devstack
-      - chown -R {{devstack.local.stack_user}}:{{devstack.local.stack_user}} {{devstack.dir.dest}} {{ devstack.dir.tmp }}/devstack
-    - require_in:
-      - cmd: openstack devstack run stack
-
-openstack devstack nginx conflict handler before stack.sh:
-  pkg.installed:
-    - name: nc
+openstack devstack install before stack.sh:
   cmd.run:
     - names:
       - systemctl stop nginx
-      - touch /tmp/devstack_stopped_nginx
-    - onlyif: nc -z localhost 80 && systemctl status nginx
+      - touch {{ devstack.dir.tmp }}/nginx_paused
+    - onlyif: which nc && nc -z localhost 80 && systemctl status nginx 2>/dev/null
+  file.replace:
+    # https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
+    - name: /usr/sbin/policy-rc.d
+    - pattern: '101'
+    - repl: '0'
+    - backup: false
+    - onlyif: test -f /usr/sbin/policy-rc.d
+    - require_in:
+      - cmd: openstack devstack install run stack
 
-openstack devstack hard dependencies workarounds:
-  ## https://bugs.launchpad.net/devstack/+bug/1806387/
-  ## https://www.edureka.co/community/65075/error-cannot-uninstall-simplejson-not-able-install-ubuntu
+openstack devstack install run stack:
+      {%- if 'pkgs_purge' in devstack and devstack.pkgs_purge %}
   pkg.purged:
     - names:
-      - python-yaml
-      - python3-simplejson
-      - python3-psutil
-    - require_in:
-      - cmd: openstack devstack run stack
+          {%- for pkg in devstack.pkgs_purge %}
+      - {{ pkg }}
+          {%- endfor %}
+      {%- endif %}
   cmd.run:
     - names:
-      - wget https://bootstrap.pypa.io/get-pip.py
-      - python get-pip.py
-    - require_in:
-      - cmd: openstack devstack run stack
-
-openstack devstack run stack:
-  cmd.run:
-    - names:
+      - mkdir -p {{ devstack.dir.dest }}/.cache
+      - chown {{ devstack.local.stack_user }}:{{ devstack.local.stack_user }} {{ devstack.dir.dest }}/.cache
+      - chmod +t {{ devstack.dir.dest }}/.cache
       - git config --global url."https://".insteadOf git://   ##proxy workaround
       - {{ devstack.dir.dest }}/stack.sh
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
-      - LOGFILE: /tmp/devstack/salt_stack.sh.log
-      - HOST_IP: {{ '127.0.0.1' if not devstack.local.host_ipv4 else devstack.local.host_ipv4 }}
-      - HOST_IPV6: {{ devstack.local.host_ipv6 }}
-      - HOST_NAME: {{'' if 'host_name' not in devstack.local else devstack.local.host_name}}
-      - DATABASE_HOST: {{'127.0.0.1' if 'db_host' not in devstack.local else devstack.local.db_host}}
-      - OS_USERNAME: {{'stack' if 'os_username' not in devstack.local else devstack.local.os_username}}
-      - OS_PROJECT_NAME: ${OS_PROJECT_NAME:-{{'default' if 'os_project_name' not in devstack.local else devstack.local.os_project_name}}
-      - OS_PASSWORD: ${OS_PASSWORD:-{{'devstack' if 'os_password' not in devstack.local else devstack.local.os_password }}}
-      - ADMIN_PASSWORD: ${ADMIN_PASSWORD:-{{'nomoresecret' if 'admin_password' not in devstack.local else devstack.local.admin_password }}}
-      - DATABASE_PASSWORD: ${DATABASE_PASSWORD:-{{'stackdb' if 'database_password' not in devstack.local else devstack.local.database_password }}}
-      - RABBIT_PASSWORD: ${RABBIT_PASSWORD:-{{'stackqueue' if 'rabbit_password' not in devstack else devstack.local.rabbit_password }}}
-      - SERVICE_PASSWORD: ${SERVICE_PASSWORD:-{{'nomoresecret' if 'service_password' not in devstack.local else devstack.local.service_password}}
-      - SERVICE_TOKEN: ${SERVICE_TOKEN:-{{'nomoresecret' if 'service_token' not in devstack.local else devstack.local.service_token }}}
+      - LOGFILE: {{ devstack.dir.tmp }}/salt_stack.sh.log
+      - HOST_IP: {{ devstack.local.host_ipv4 or '127.0.0.1' }}
+      - HOST_IPV6: {{ devstack.local.host_ipv6 or '::1' }}
+      - HOST_NAME: {{ devstack.local.host_name or devstack.local.host_ipv4 or '127.0.0.1' }}
+      - DATABASE_HOST: {{ devstack.local.db_host or '127.0.0.1' }}
+      - OS_USERNAME: {{ devstack.local.os_username or 'admin' }}
+      - OS_PROJECT_NAME: {{ devstack.local.os_project_name or 'admin' }}
+      - OS_PASSWORD: {{ devstack.local.os_password or 'devstack' }}
+      - ADMIN_PASSWORD: {{ devstack.local.admin_password or 'devstack' }}
+      - DATABASE_PASSWORD: {{ devstack.local.database_password or 'devstack' }}
+      - RABBIT_PASSWORD: {{ devstack.local.rabbit_password or 'stackqueue' }}
+      - SERVICE_PASSWORD: {{ devstack.local.service_password or 'devstack' }}
+      - SERVICE_TOKEN: {{ devstack.local.service_token or 'devstack' }}
   file.managed:
     - name: {{ devstack.dir.dest }}/openrc
     - source: salt://devstack/files/openrc.j2
@@ -136,12 +134,13 @@ openstack devstack run stack:
         devstack: {{ devstack|json }}
     - onlyif: {{ devstack.managed.openrc }}
 
-openstack devstack nginx conflict handler after stack.sh:
+openstack devstack install after stack.sh:
   cmd.run:
     - names:
       - systemctl start nginx
-      - rm /tmp/devstack_stopped_nginx
-    - onlyif: test -f /tmp/devstack_stopped_nginx
+      - rm {{ devstack.dir.tmp }}/nginx_paused
+    - onlyif: test -f {{ devstack.dir.tmp }}/nginx_paused
   pkg.installed:
     - name: {{ devstack.pip_pkg }}      ##stack.sh removed the package
     - onlyif: {{ devstack.pip_pkg }}
+

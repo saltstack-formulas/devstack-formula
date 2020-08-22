@@ -2,7 +2,7 @@
 devstack-formula
 ================
 
-A Salt formula to deploy local OpenStack cloud (aka Devstack) on GNU/Linux from git source trees.
+A Salt formula to deploy local OpenStack cloud (aka Devstack) on GNU/Linux.
 
 **NOTE**
 
@@ -78,22 +78,28 @@ Support for OSC add use cases. See https://docs.openstack.org/python-openstackcl
 
 Testing
 =========
-Verified on Fedora 27, Ubuntu 16.04, and Centos 7.
+Verified on Fedora 27, Ubuntu 18.04, and Centos7.
 
 Reference Solution
 ========================
-The following configuration works on RedHat family and Ubuntu. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
 
-Salt states (top.sls) for install::
+The formula targets Debian and RedHat families. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
+
+Salt states (top.sls) for UBUNTU::
 
         base:
           '*':
-            - packages.pkgs        #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
-            - packages.archives    #RedHat only? https://github.com/saltstack-formulas/mysql-formula/issues/195
-            - mysql                #install mysql server (after ``packages`` state runs)
             - devstack
 
-Salt states (top.sls) for Openstack CLI::
+Salt states (top.sls) for REDHAT::
+
+        base:
+          '*':
+            - packages.pkg
+            - packages.archives
+            - devstack
+
+Salt states (top.sls) for CLI::
 
         base:
           '*':
@@ -102,4 +108,8 @@ Salt states (top.sls) for Openstack CLI::
 
 Site/Release-specific Pillar Data::
 
-        See `pillar.example` file
+        See `pillar.example`
+
+The Devstack installer makes drastic and dramatic changes to your Linux environment. Use a fresh Linux OS installation and avoid making assumptions - Devstack only supports MYSQL on 127.0.0.1:
+  - https://bugs.launchpad.net/devstack/+bug/1735097
+  - https://bugs.launchpad.net/devstack/+bug/1892531

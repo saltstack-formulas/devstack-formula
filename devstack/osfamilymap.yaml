@@ -1,18 +1,23 @@
 
 RedHat:
-  pip_pkg: python2-pip
-  pkgs:
+  pip_pkg: python3-pip
+  pkgs_add:
+    - nc
     - redhat-lsb-core
+    - python3-devel
   pips:
+    - python-memcached
     - pysaml2
 
 Debian:
-  pkgs:
+  pip_pkg: python3-pip
+  pkgs_add:
     - git
     - bridge-utils
     - apache2
+    - netcat
     - python3-distutils
 
 FreeBSD:
-  pkgs:
+  pkgs_add:
     - git
