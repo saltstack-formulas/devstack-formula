@@ -85,18 +85,10 @@ Reference Solution
 
 The formula targets Debian and RedHat families. For OpenStack CLI (OSC) suppport, study the ``pillar.example`` carefully and raise an issue to track failed OSC commands.
 
-Salt states (top.sls) for UBUNTU::
+Salt states (top.sls) for UBUNTU/CENTOS::
 
         base:
           '*':
-            - devstack
-
-Salt states (top.sls) for REDHAT::
-
-        base:
-          '*':
-            - packages.pkg
-            - packages.archives
             - devstack
 
 Salt states (top.sls) for CLI::

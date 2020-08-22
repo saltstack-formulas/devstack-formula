@@ -27,6 +27,11 @@ openstack devstack install ensure package dependencies:
       - {{ pkg }}
           {%- endfor %}
       {%- endif %}
+  cmd.run:
+    - names:
+      - systemctl stop nginx
+      - touch {{ devstack.dir.tmp }}/nginx_paused
+    - onlyif: which nc && nc -z localhost 80 && systemctl status nginx 2>/dev/null
 
 openstack devstack install git cloned:
   git.latest:
@@ -38,13 +43,11 @@ openstack devstack install git cloned:
     - force_fetch: True
     - force_reset: True
     - force_checkout: True
-    {% if grains['saltversioninfo'] >= [2017, 7, 0] %}
     - retry:
         attempts: 3
         until: True
         interval: 60
         splay: 10
-    {%- endif %}
     - require:
       - user: openstack devstack user ensure user and group exist
       - pkg: openstack devstack install ensure package dependencies
@@ -76,11 +79,6 @@ openstack devstack install configure local_conf:
         devstack: {{ devstack|json }}
 
 openstack devstack install before stack.sh:
-  cmd.run:
-    - names:
-      - systemctl stop nginx
-      - touch {{ devstack.dir.tmp }}/nginx_paused
-    - onlyif: which nc && nc -z localhost 80 && systemctl status nginx 2>/dev/null
   file.replace:
     # https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
     - name: /usr/sbin/policy-rc.d
@@ -90,25 +88,74 @@ openstack devstack install before stack.sh:
     - onlyif: test -f /usr/sbin/policy-rc.d
     - require_in:
       - cmd: openstack devstack install run stack
-
-openstack devstack install run stack:
       {%- if 'pkgs_purge' in devstack and devstack.pkgs_purge %}
   pkg.purged:
     - names:
-          {%- for pkg in devstack.pkgs_purge %}
+           {%- for pkg in devstack.pkgs_purge %}
       - {{ pkg }}
-          {%- endfor %}
+           {%- endfor %}
       {%- endif %}
+
+      {%- if grains.os_family == 'RedHat' %}
+openstack devstack install before stack.sh redhat:
+  git.latest:
+    ## workaround /opt/stack/../global-requirements.txt: No such file or directory ##
+    - name: {{ devstack.local.git_req_url }}
+    - rev: {{ devstack.local.git_branch }}
+    - target: {{ devstack.dir.dest }}/requirements
+    - user: {{ devstack.local.stack_user }}
+    - force_clone: True
+    - force_fetch: True
+    - force_reset: True
+    - force_checkout: True
+    - retry:
+        attempts: 3
+        until: True
+        interval: 60
+        splay: 10
+    - require:
+      - user: openstack devstack user ensure user and group exist
+  file.managed:
+    ## workaround bugzilla 1464570 ##
+    - name: {{ devstack.dir.tmp }}/bugzilla-1464570.sh
+    - source: salt://devstack/files/bugzilla-1464570.sh
+    - user: {{ devstack.local.stack_user }}
+    - group: {{ devstack.local.stack_user }}
+    - mode: '0755'
+    - require_in:
+      - cmd: openstack devstack install git cloned
   cmd.run:
     - names:
-      - mkdir -p {{ devstack.dir.dest }}/.cache
-      - chown {{ devstack.local.stack_user }}:{{ devstack.local.stack_user }} {{ devstack.dir.dest }}/.cache
-      - chmod +t {{ devstack.dir.dest }}/.cache
+        ### workaround: bugzilla 1464570
+      - {{ devstack.dir.tmp }}/bugzilla-1464570.sh || true
+        ### workaround: env: /opt/stack/requirements/.venv/bin/pip: No such file or directory
+      - python3 -m venv requirements/.venv
+      - chown -R {{ devstack.local.stack_user }}:{{ devstack.local.stack_user }} requirements/
+    - cwd: {{ devstack.dir.dest }}
+
+openstack devstack install before stack.sh redhat httpd:
+  file.replace:
+    - name: {{ devstack.dir.dest }}/lib/apache
+    - pattern: 'python3-mod_wsgi'
+    - repl: 'mod_proxy_uwsgi'
+    - backup: false
+    - onlyif: test -f {{ devstack.dir.dest }}/lib/apache
+    - require_in:
+      - cmd: openstack devstack install run stack
+      {%- endif %}
+
+openstack devstack install run stack:
+  cmd.run:
+    - names:
+      - mkdir -p {{ devstack.dir.dest }}/.cache {{ devstack.dir.dest }}/requirements/.venv
       - git config --global url."https://".insteadOf git://   ##proxy workaround
-      - {{ devstack.dir.dest }}/stack.sh
+      - FORCE=yes {{ devstack.dir.dest }}/stack.sh
+    - cwd: {{ devstack.dir.dest }}
     - hide_output: {{ devstack.hide_output }}
     - runas: {{ devstack.local.stack_user }}
     - env:
+      - LC_ALL: C
+      - USE_PYTHON3: True
       - LOGFILE: {{ devstack.dir.tmp }}/salt_stack.sh.log
       - HOST_IP: {{ devstack.local.host_ipv4 or '127.0.0.1' }}
       - HOST_IPV6: {{ devstack.local.host_ipv6 or '::1' }}

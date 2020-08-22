@@ -48,7 +48,7 @@ devstack:
     openrc: False
 
   dir:
-    tmp: /tmp/devstack	{# not sure why centos wants this? #}
+    tmp: /tmp/devstack  {# not sure why centos wants this? #}
 
   ### openstack cli ###
   cli:

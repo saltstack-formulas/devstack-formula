@@ -5,6 +5,11 @@ RedHat:
     - nc
     - redhat-lsb-core
     - python3-devel
+    - python3-libs
+    - python-virtualenv
+    - iptables-services
+    - systemd-devel
+    - mod_proxy_uwsgi  # for httpd
   pips:
     - python-memcached
     - pysaml2

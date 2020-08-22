@@ -124,6 +124,9 @@ SWIFT_REPLICAS=1
 SWIFT_DATA_DIR=$DEST/data
 
 # Added by Salt
+enable_service placement-api
+enable_service placement-client
+
 ## Neutron
 # -----
 Q_USE_SECGROUP=${Q_USE_SECGROUP:-True}
