@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-{% from "devstack/map.jinja" import devstack with context %}
-{% from "devstack/files/macros.jinja" import getcmd, getargs, getlist with context %}
+
+{%- set tplroot = tpldir.split('/')[0] %}
+{%- from tplroot ~ "/map.jinja" import devstack with context %}
+{%- from tplroot ~ "/files/macros.jinja" import getcmd, getargs, getlist with context %}
 
     {% for feature, task in devstack.cli.items() %}
       {%- if "delete" in devstack.cli[feature] and devstack.cli[feature]['delete'] is mapping %}

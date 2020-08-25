@@ -2,5 +2,5 @@
 # vim: ft=sls
 
 include:
-  - .software.clean
-  - .config.clean
+  - .user
+  - .file

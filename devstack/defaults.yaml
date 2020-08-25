@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
+---
 devstack:
+  rootgroup: root
   hide_output: True
   dir_mode: '0775'
   mode: '0644'
@@ -8,8 +10,6 @@ devstack:
   pkgs_purge: null
   pips: []
   pip_pkg: python-pip
-  cli: {}
-
   managed:
     openrc: True
   dir:
@@ -60,3 +60,9 @@ devstack:
     admin_password: devstack
     host_ipv4: {{ '127.0.0.1' if not grains.ipv4 else grains.ipv4[-1] }}
     host_ipv6: {{ '' if not grains.ipv6 else grains.ipv6[-1] }}
+
+  cli: {}
+
+  # Just here for testing
+  added_in_defaults: defaults_value
+  winner: defaults

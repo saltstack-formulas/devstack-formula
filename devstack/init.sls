@@ -1,6 +1,6 @@
-## Automate tasks in logical sequence ...
+# -*- coding: utf-8 -*-
+# vim: ft=sls
 
 include:
-  - devstack.user
-  - devstack.install
-  - devstack.cli
+  - .software
+  - .cli
