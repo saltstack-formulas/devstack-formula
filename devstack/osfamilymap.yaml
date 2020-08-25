@@ -2,10 +2,12 @@
 RedHat:
   pip_pkg: python3-pip
   pkgs_add:
-    - nc
+    - epel-release
+    - nmap-ncat
     - redhat-lsb-core
     - python3-devel
     - python3-libs
+    - python3-pip
     - python-virtualenv
     - iptables-services
     - systemd-devel

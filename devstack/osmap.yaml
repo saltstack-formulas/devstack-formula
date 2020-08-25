@@ -1,7 +1,3 @@
 
-CentOS:
-  pkgs_add:
-    - epel-release
-
 FreeBSD:
   pip_pkg: devel/py-pip

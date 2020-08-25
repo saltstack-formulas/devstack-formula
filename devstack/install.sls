@@ -126,6 +126,9 @@ openstack devstack install before stack.sh redhat:
       - cmd: openstack devstack install git cloned
   cmd.run:
     - names:
+        ### workround Cannot uninstall 'PyYAML', distutils installed project
+      - rpm -e --nodeps python36-PyYAML || true
+      - /usr/local/bin/pip3 install PyYAML || true
         ### workaround: bugzilla 1464570
       - {{ devstack.dir.tmp }}/bugzilla-1464570.sh || true
         ### workaround: env: /opt/stack/requirements/.venv/bin/pip: No such file or directory
