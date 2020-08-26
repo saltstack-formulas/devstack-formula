@@ -44,19 +44,19 @@ source $RC_DIR/lib/tls
 # referenced, but in all cases this just means **project**.  We will
 # warn if we need to turn on legacy **tenant** support to have a
 # working environment.
-export OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{ devstack.local.os_project_name or 'admin' }}}
+export OS_PROJECT_NAME=${OS_PROJECT_NAME:-{{ devstack.local.os_project_name or 'admin' }} }
 
 echo "WARNING: setting legacy OS_TENANT_NAME to support cli tools."
 export OS_TENANT_NAME=$OS_PROJECT_NAME
 
 # In addition to the owning entity (project), nova stores the entity performing
 # the action as the **user**.
-export OS_USERNAME=${OS_USERNAME:-{{ devstack.local.os_username or 'admin' }}}
+export OS_USERNAME=${OS_USERNAME:-{{ devstack.local.os_username or 'admin' }} }
 
 # With Keystone you pass the keystone password instead of an api key.
 # Recent versions of novaclient use OS_PASSWORD instead of NOVA_API_KEYs
 # or NOVA_PASSWORD.
-export ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or 'devstack' }}}
+export ADMIN_PASSWORD=${ADMIN_PASSWORD:-{{ devstack.local.admin_password or 'devstack' }} }
 export OS_PASSWORD=${ADMIN_PASSWORD}
 
 # Region

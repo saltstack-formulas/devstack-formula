@@ -14,6 +14,7 @@ Debian:
   pip_pkg: python3-pip
   pkgs_add:
     - git
+    - iproute2
     - bridge-utils
     - apache2
     - netcat

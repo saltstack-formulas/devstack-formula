@@ -85,7 +85,6 @@ devstack-software-install-stackrc:
         devstack: {{ devstack | json }}
     - require:
       - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
     - require_in:
       - cmd: devstack-software-install
 
@@ -106,17 +105,71 @@ devstack-software-install-localconf:
         devstack: {{ devstack | json }}
     - require:
       - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
     - require_in:
       - cmd: devstack-software-install
 
-devstack-software-replace-apache:
+devstack-software-replace-policyrc:
+  file.replace:
+    # https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
+    - name: /usr/sbin/policy-rc.d
+    - pattern: '101'
+    - repl: '0'
+    - backup: false
+    - onlyif: test -f /usr/sbin/policy-rc.d
+    - require:
+      - git: devstack-software-install-prepare
+    - require_in:
+      - cmd: devstack-software-install
+
+devstack-software-install-workarounds:
+    {%- if not salt['cmd.run']('test -f {0}/requirements/global-requirements.txt'.format(devstack.dir.dest)) %}
+  git.latest:
+    ## workaround /opt/stack/../global-requirements.txt: No such file or directory ##
+    - name: {{ devstack.local.git_req_url }}
+    - rev: {{ devstack.local.git_branch }}
+    - target: {{ devstack.dir.dest }}/requirements
+    - user: {{ devstack.local.stack_user }}
+    - force_clone: True
+    - force_fetch: True
+    - force_reset: True
+    - force_checkout: True
+    - retry:
+        attempts: 3
+        until: True
+        interval: 60
+        splay: 10
+    - require:
+      - git: devstack-software-install-prepare
+    - require_in:
+      - cmd: devstack-software-install
+      {%- endif %}
+      {%- if grains.os_family == 'RedHat' %}
   file.replace:
     - name: {{ devstack.dir.dest }}/lib/apache
     - pattern: 'python3-mod_wsgi'
     - repl: 'mod_proxy_uwsgi'
     - backup: false
     - onlyif: test -f {{ devstack.dir.dest }}/lib/apache
+    - require:
+      - git: devstack-software-install-prepare
+    - require_in:
+      - cmd: devstack-software-install
+  cmd.run:
+    - names:
+        ### workround Cannot uninstall 'PyYAML', distutils installed project
+      - (rpm -e --nodeps python36-PyYAML && /usr/local/bin/pip3 install PyYAML) || true
+        ### workaround: bugzilla 1464570
+      - {{ devstack.dir.tmp }}/bugzilla-1464570.sh || true
+        ### workaround: env: /opt/stack/requirements/.venv/bin/pip: No such file or directory
+      - python3 -m venv requirements/.venv
+      - chown -R {{ devstack.local.stack_user }}:{{ devstack.local.stack_user }} requirements/
+        ### ensure nginx stopped
+      - systemctl stop nginx || service stop nginx || true
+    - cwd: {{ devstack.dir.dest }}
+      {%- else %}
+  cmd.run:
+    - name: systemctl stop nginx || service stop nginx || true
+      {%- endif %}
     - require:
       - git: devstack-software-install-prepare
       - file: devstack-software-install-prepare
@@ -137,73 +190,12 @@ devstack-software-install-bugzilla-1464570:
     - makedirs: True
     - require:
       - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
-    - require_in:
-      - cmd: devstack-software-install
-
-devstack-software-replace-policyrc:
-  file.replace:
-    # https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
-    - name: /usr/sbin/policy-rc.d
-    - pattern: '101'
-    - repl: '0'
-    - backup: false
-    - onlyif: test -f /usr/sbin/policy-rc.d
-    - require:
-      - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
-    - require_in:
-      - cmd: devstack-software-install
-
-devstack-software-install-workarounds:
-    {%- if grains.os_family == 'RedHat' %}
-  git.latest:
-    ## workaround /opt/stack/../global-requirements.txt: No such file or directory ##
-    - name: {{ devstack.local.git_req_url }}
-    - rev: {{ devstack.local.git_branch }}
-    - target: {{ devstack.dir.dest }}/requirements
-    - user: {{ devstack.local.stack_user }}
-    - force_clone: True
-    - force_fetch: True
-    - force_reset: True
-    - force_checkout: True
-    - retry:
-        attempts: 3
-        until: True
-        interval: 60
-        splay: 10
-    - require:
-      - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
-    - require_in:
-      - cmd: devstack-software-install
-  cmd.run:
-    - names:
-        ### workround Cannot uninstall 'PyYAML', distutils installed project
-      - rpm -e --nodeps python36-PyYAML || true
-      - /usr/local/bin/pip3 install PyYAML || true
-        ### workaround: bugzilla 1464570
-      - {{ devstack.dir.tmp }}/bugzilla-1464570.sh || true
-        ### workaround: env: /opt/stack/requirements/.venv/bin/pip: No such file or directory
-      - python3 -m venv requirements/.venv
-      - chown -R {{ devstack.local.stack_user }}:{{ devstack.local.stack_user }} requirements/
-        ### ensure nginx stopped
-      - systemctl stop nginx || service stop nginx || true
-    - cwd: {{ devstack.dir.dest }}
-      {%- else %}
-  cmd.run:
-    - name: systemctl stop nginx || service stop nginx || true
-      {%- endif %}
-    - require:
-      - git: devstack-software-install-prepare
-      - file: devstack-software-install-prepare
     - require_in:
       - cmd: devstack-software-install
 
 devstack-software-install:
   cmd.run:
     - names:
-      - mkdir -p {{ devstack.dir.dest }}/.cache {{ devstack.dir.dest }}/requirements/.venv
       - git config --global url."https://".insteadOf git://   ##proxy workaround
       - FORCE=yes {{ devstack.dir.dest }}/stack.sh
     - cwd: {{ devstack.dir.dest }}
@@ -227,11 +219,11 @@ devstack-software-install:
       - SERVICE_TOKEN: {{ devstack.local.service_token or 'devstack' }}
     - require:
       - sls: {{ sls_config_user }}
-      - git: devstack-software-install-workarounds
-      - file: devstack-software-install-prepare
+      - git: devstack-software-install-prepare
       - cmd: devstack-software-install-workarounds
     - require_in:
       - file: devstack-config-file-install-openrc
+      - cmd: devstack-software-postinstall
 
 devstack-software-postinstall:
   pkg.installed:

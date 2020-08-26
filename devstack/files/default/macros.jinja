@@ -1,7 +1,7 @@
 {%- macro getcmd(outdict) -%}
   {%- for key, value in outdict.items() -%}
     {{- getargs(key, value) -}}
-  {%- endfor -%} 
+  {%- endfor -%}
 {%- endmacro -%}
 
 {%- macro getargs(k, v) %}

@@ -1,36 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 ---
-# SITE & RELEASE SPECIFIC DATA
-
-  {%- set enabled_services = 'mysql,key' %}
-  {%- set yoursvc_name = 'keystone' %}
-  {%- set yoursvc_domain = 'default' %}
-  {%- set yoursvc_version = 'v0.2.0' %}
-  {%- set yoursvc_region = 'RegionOne' %}
-  {%- set yoursvc_type = yoursvc_name ~ yoursvc_version %}
-  {%- set yoursvc_endpoint = yoursvc_type %}
-  {%- set yoursvc_endpath = yoursvc_name ~ '/' ~ yoursvc_version %}
-
-  {%- set os_project_name = 'admin' %}
-  {%- set os_password = 'devstack' %}
-  {%- set host_ipv4 = grains.ipv4[-1] or '127.0.0.1' %}
-  {%- set host_ipv6 = '' if not grains.ipv6 else grains.ipv6[-1] %}
-  {%- set host = host_ipv4 or host_ipv6 %}
-  {%- set port = '50040' %}
-
-  {# mysql host must be 127.0.0.1 #}
-  {# https://bugs.launchpad.net/devstack/+bug/1735097 #}
-  {%- set db_host = '127.0.0.1' %}
-  {# https://bugs.launchpad.net/devstack/+bug/1892531 #}
-
-# DATA DICTIONARY
-
 mysql:
   server:
-    root_password: {{ os_password }}   # sync with devstack
+    root_password: devstack   # sync with devstack
     mysqld:
-      bind_address: {{ db_host or host_ipv4 or "127.0.0.1" }}   # sync with devstack
+      bind_address: 127.0.0.1   # sync with devstack
 
 devstack:
   lookup:
@@ -41,18 +16,18 @@ devstack:
 
   pkgs_purge:
     - python3-simplejson
-  hide_output: true   # see stack.sh output?
+  hide_output: true
   local:
     stack_user: stack
-    os_password: {{ os_password }}
-    os_project_name: {{ os_project_name }}
-    admin_password: {{ os_password }}
+    os_password: devstack
+    os_project_name: admin
+    admin_password: devstack
     git_branch: 'stable/ussuri'
-    enabled_services: {{ enabled_services }}
-    host_ipv4: {{ host_ipv4 }}
-    host_ipv6: {{ host_ipv6 }}
-    service_host: {{ host_ipv4 or host_ipv6 }}
-    db_host: {{ db_host }}
+    enabled_services: 'mysql,key'
+    host_ipv4: 127.0.0.1
+    host_ipv6: ::1
+    service_host: 127.0.0.1
+    db_host: 127.0.0.1
   managed:
     openrc: False
 
@@ -65,11 +40,11 @@ devstack:
     # User
     user:
       create:
-        {{ yoursvc_name }}:
+        'keystone':
           options:
-            domain: {{ yoursvc_domain }}
-            password: {{ os_password }}
-            project: {{ os_project_name }}
+            domain: default
+            password: devstack
+            project: admin
             enable: True
       delete:
         demo:
@@ -84,54 +59,54 @@ devstack:
       create:
         service:
           options:
-            domain: {{ yoursvc_domain }}
+            domain: default
       add user:
         service:
           target:
-            - {{ yoursvc_name }}
+            - 'keystone'
         admins:
           options:
-            domain: {{ yoursvc_domain }}
+            domain: default
           target:
-            - {{ os_project_name }}
+            - admin
 
     # Role based authentication
     role:
       add:
         admin:
           options:
-            project: {{ os_project_name }}
+            project: admin
           user:
-            - {{ yoursvc_name }}
+            - 'keystone'
         service:
           options:
-            project: {{ os_project_name }}
+            project: admin
           group:
             - service
 
     # Service
     service:
       create:
-        {{ yoursvc_type }}:
+        keystonev0.2.0:
           options:
-            name: {{ yoursvc_name }}
-            description: {{ yoursvc_name }} Service
+            name: 'keystone'
+            description: keystone Service
             enable: True
 
     # Service Endpoint
     endpoint:
       create:
-        {{ yoursvc_endpoint }} public https://{{ host }}/{{ port }}//{{ yoursvc_version }}/%\(tenant_id\)s:
+        keystonev0.2.0 public https://127.0.0.1/50040//v0.2.0/%\(tenant_id\)s:
           options:
-            region: {{ yoursvc_region }}
+            region: RegionOne
             enable: True
-        {{ yoursvc_endpoint }} internal https://{{ host }}/{{ port }}/{{ yoursvc_version }}/%\(tenant_id\)s:
+        keystonev0.2.0 internal https://127.0.0.1/50040/v0.2.0/%\(tenant_id\)s:
           options:
-            region: {{ yoursvc_region }}
+            region: RegionOne
             enable: True
-        {{ yoursvc_endpoint }} admin https://{{ host }}/{{ port }}/{{ yoursvc_version }}/%\(tenant_id\)s:
+        keystonev0.2.0 admin https://127.0.0.1/50040/v0.2.0/%\(tenant_id\)s:
           options:
-            region: {{ yoursvc_region }}
+            region: RegionOne
             enable: True
 
     # Delete some presupplied stuff
