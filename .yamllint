@@ -15,6 +15,7 @@ ignore: |
   .kitchen/
   pillar.example
   devstack/files/default/stackrc.j2
+  devstack/defaults.sls
   devstack/files/default/local.conf.j2
 
 yaml-files:

@@ -18,7 +18,7 @@ devstack:
     log: /tmp/devstack
   local:
     stack_user: stack
-    enabled_services: 'mysql, key'
+    enabled_services: 'mysql,key'
     sudoers_file: /etc/sudoers.d/50_devstack_user
     git_base: 'https://git.openstack.org'
     git_branch: 'stable/ussuri'

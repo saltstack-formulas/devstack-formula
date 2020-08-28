@@ -156,8 +156,6 @@ devstack-software-install-workarounds:
       - cmd: devstack-software-install
   cmd.run:
     - names:
-        ### workround Cannot uninstall 'PyYAML', distutils installed project
-      - (rpm -e --nodeps python36-PyYAML && /usr/local/bin/pip3 install PyYAML) || true
         ### workaround: bugzilla 1464570
       - {{ devstack.dir.tmp }}/bugzilla-1464570.sh || true
         ### workaround: env: /opt/stack/requirements/.venv/bin/pip: No such file or directory
@@ -196,6 +194,8 @@ devstack-software-install-bugzilla-1464570:
 devstack-software-install:
   cmd.run:
     - names:
+        ### Centos: workround Cannot uninstall 'PyYAML', distutils installed project
+      - (test -f /etc/redhat-release && rpm -e --nodeps python36-PyYAML && /usr/local/bin/pip3 install PyYAML)|| true
       - git config --global url."https://".insteadOf git://   ##proxy workaround
       - FORCE=yes {{ devstack.dir.dest }}/stack.sh
     - cwd: {{ devstack.dir.dest }}

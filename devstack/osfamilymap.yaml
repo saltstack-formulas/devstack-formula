@@ -15,6 +15,8 @@ Debian:
   pkgs_add:
     - git
     - iproute2
+    - netbase
+    - iptables
     - bridge-utils
     - apache2
     - netcat
