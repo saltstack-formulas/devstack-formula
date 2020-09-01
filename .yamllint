@@ -11,12 +11,8 @@ extends: default
 ignore: |
   node_modules/
   test/**/states/**/*.sls
-  test/salt/pillar/*.sls
   .kitchen/
   pillar.example
-  devstack/files/default/stackrc.j2
-  devstack/defaults.sls
-  devstack/files/default/local.conf.j2
 
 yaml-files:
   # Default settings

@@ -29,10 +29,10 @@ devstack:
     service_host: 127.0.0.1
     db_host: 127.0.0.1
   managed:
-    openrc: False
+    openrc: false
 
   dir:
-    tmp: /tmp/devstack  {# not sure why centos wants this? #}
+    tmp: /tmp/devstack  # not sure why centos wants this?
 
   ### openstack cli ###
   cli:
@@ -45,7 +45,7 @@ devstack:
             domain: default
             password: devstack
             project: admin
-            enable: True
+            enable: true
       delete:
         demo:
           options:
@@ -91,7 +91,7 @@ devstack:
           options:
             name: 'keystone'
             description: keystone Service
-            enable: True
+            enable: true
 
     # Service Endpoint
     endpoint:
@@ -99,15 +99,15 @@ devstack:
         keystonev0.2.0 public https://127.0.0.1/50040//v0.2.0/%\(tenant_id\)s:
           options:
             region: RegionOne
-            enable: True
+            enable: true
         keystonev0.2.0 internal https://127.0.0.1/50040/v0.2.0/%\(tenant_id\)s:
           options:
             region: RegionOne
-            enable: True
+            enable: true
         keystonev0.2.0 admin https://127.0.0.1/50040/v0.2.0/%\(tenant_id\)s:
           options:
             region: RegionOne
-            enable: True
+            enable: true
 
     # Delete some presupplied stuff
     project:
