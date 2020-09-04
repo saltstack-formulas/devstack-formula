@@ -2,6 +2,15 @@
 Changelog
 =========
 
+`1.0.1 <https://github.com/saltstack-formulas/devstack-formula/compare/v1.0.0...v1.0.1>`_ (2020-09-04)
+----------------------------------------------------------------------------------------------------------
+
+Documentation
+^^^^^^^^^^^^^
+
+
+* **readme:** fix syntax (\ `da697e0 <https://github.com/saltstack-formulas/devstack-formula/commit/da697e0053356d314ecbdaf6d71b708cfa1ec737>`_\ )
+
 1.0.0 (2020-09-04)
 ------------------
 
