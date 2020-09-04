@@ -1,42 +1,42 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
+---
 devstack:
-  hide_output: True
+  rootgroup: root
+  hide_output: true
   dir_mode: '0775'
   mode: '0644'
-  pkgs_add: ['git','bridge-utils',]
+  pkgs_add: ['git', 'bridge-utils']
   pkgs_purge: null
   pips: []
   pip_pkg: python-pip
-  cli: {}
-
   managed:
-    openrc: True
+    openrc: true
   dir:
     dest: /opt/stack
     tmp: /tmp/devstack
     log: /tmp/devstack
   local:
     stack_user: stack
-    enabled_services:
+    enabled_services: 'mysql,key'
     sudoers_file: /etc/sudoers.d/50_devstack_user
     git_base: 'https://git.openstack.org'
     git_branch: 'stable/ussuri'
     git_url: 'https://git.openstack.org/openstack-dev/devstack'
     git_req_url: 'https://github.com/openstack/requirements'
-    reclone: no
-    host_name: {{ grains.host }}
-    db_host: {{ grains.host }}
+    reclone: 'yes'
+    host_name: '{{ grains.host }}'
+    db_host: '{{ grains.host }}'
     enable_httpd_mod_wsgi_services: false
     keystone_use_mod_wsgi: false
     logfile: stack.sh.log
-    logdays:
-    log_color:
+    logdays: 2
+    log_color: null
     use_venv: false
-    verbose:
+    verbose: false
     virtualenv_cmd: python3 -m venv
-    enable_debug_log_level:
-    enable_verbose_log_level:
+    enable_debug_log_level: false
+    enable_verbose_log_level: false
 
     ### leave blank
     database_password: null
@@ -58,5 +58,11 @@ devstack:
     os_username: admin
     os_password: devstack
     admin_password: devstack
-    host_ipv4: {{ '127.0.0.1' if not grains.ipv4 else grains.ipv4[-1] }}
-    host_ipv6: {{ '' if not grains.ipv6 else grains.ipv6[-1] }}
+    host_ipv4: '{{ "127.0.0.1" if not grains.ipv4 else grains.ipv4[-1] }}'
+    host_ipv6: '{{ "" if not grains.ipv6 else grains.ipv6[-1] }}'
+
+  cli: {}
+
+  # Just here for testing
+  added_in_defaults: defaults_value
+  winner: defaults

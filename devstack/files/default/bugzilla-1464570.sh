@@ -10,12 +10,12 @@ RC=0
 
 if [[ -d "${DIR}" ]]
 then 
-    cd ${DIR}
+    cd "${DIR}" || exit 1
     mkdir _bundled 2>/dev/null
-    cd _bundled
+    cd _bundled || exit 1
     wget https://files.pythonhosted.org/packages/e7/16/da8cb8046149d50940c6110310983abb359bbb8cbc3539e6bef95c29428a/setuptools-40.6.2-py2.py3-none-any.whl || RC=1
     wget https://files.pythonhosted.org/packages/ac/95/a05b56bb975efa78d3557efa36acaf9cf5d2fd0ee0062060493687432e03/pip-9.0.3-py2.py3-none-any.whl || RC=1
-    cd ${PWD}
+    cd "${PWD}" || exit 1
 fi
 (( RC > 0 )) && echo "Error: Customize this script for your Centos/Pyton version [$0]"
 exit ${RC}

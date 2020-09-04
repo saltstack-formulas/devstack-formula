@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: ft=sls
-{% from "devstack/map.jinja" import devstack with context %}
 
-openstack devstack user ensure user and group exist:
+{%- set tplroot = tpldir.split('/')[0] %}
+{%- from tplroot ~ "/map.jinja" import devstack with context %}
+{%- from tplroot ~ "/libtofs.jinja" import files_switch with context %}
+
+devstack-user-install:
   group.present:
     - name: {{ devstack.local.stack_user }}
   user.present:
@@ -14,7 +17,7 @@ openstack devstack user ensure user and group exist:
     - groups:
       - {{ devstack.local.stack_user }}
     - require:
-      - group: openstack devstack user ensure user and group exist
+      - group: devstack-user-install
   file.directory:
     - names:
       - {{ devstack.dir.dest }}
@@ -27,16 +30,18 @@ openstack devstack user ensure user and group exist:
       - group
       - mode
 
-openstack devstack user ensure sudo rights:
+devstack-user-sudoers-install:
   file.managed:
     - name: {{ devstack.local.sudoers_file }}
-    - source: salt://devstack/files/devstack.sudoers
+    - source: {{ files_switch(['devstack.sudoers'],
+                              lookup='devstack-user-sudoers-install'
+                 )
+              }}
     - mode: 440
-    - runas: root
     - user: root
     - makedirs: True
     - template: jinja
     - context:
       stack_user: {{ devstack.local.stack_user }}
     - require:
-      - user: openstack devstack user ensure user and group exist
+      - user: devstack-user-install

@@ -53,7 +53,7 @@ RABBIT_HOST=${RABBIT_HOST:-$HOST_IP}
 GLANCE_HOSTPORT=${GLANCE_HOSTPORT:-$HOST_IP:9292}
 
 ENABLED_SERVICES={{ devstack.local.enabled_services or "" }}
-DEST=${DEST:-{{ "/opt/stack" if not devstack.dir.dest else devstack.dir.dest }}}
+DEST=${DEST:-{{ '/opt/stack' if not devstack.dir.dest else devstack.dir.dest }}}
 DATA_DIR=${DATA_DIR:-{{ '/opt/stack' if not devstack.dir.dest else devstack.dir.dest }}/data}
 
 GIT_BASE=${GIT_BASE:-{{ "https://git.openstack.org" if not devstack.local.git_base else devstack.local.git_base }}}
@@ -148,7 +148,7 @@ OVS_PHYSICAL_BRIDGE=${OVS_PHYSICAL_BRIDGE:-br-ex}
 PUBLIC_BRIDGE=${OVS_PHYSICAL_BRIDGE:-br-ex}
 OVS_BRIDGE_MAPPINGS=${OVS_BRIDGE_MAPPINGS:-public:br-ex}
 
-ODL_MGR_IP=${HOST_IP:-'127.0.0.1' }}}
+ODL_MGR_IP=${HOST_IP:-'127.0.0.1'}
 
 # Used by openrc
 #---------------

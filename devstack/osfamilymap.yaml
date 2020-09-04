@@ -1,11 +1,36 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+#
+# Setup variables using grains['os_family'] based logic.
+# You just need to add the key:values for an `os_family` that differ
+# from `defaults.yaml` + `osarch.yaml`.
+# Only add an `os_family` which is/will be supported by the formula.
+#
+# If you do not need to provide defaults via the `os_family` grain,
+# you will need to provide at least an empty dict in this file, e.g.
+# osfamilymap: {}
+---
+Debian:
+  pip_pkg: python3-pip
+  pkgs_add:
+    - git
+    - iproute2
+    - netbase
+    - iptables
+    - bridge-utils
+    - apache2
+    - netcat
+    - python3-distutils
 
 RedHat:
   pip_pkg: python3-pip
   pkgs_add:
-    - nc
+    - epel-release
+    - nmap-ncat
     - redhat-lsb-core
     - python3-devel
     - python3-libs
+    - python3-pip
     - python-virtualenv
     - iptables-services
     - systemd-devel
@@ -14,15 +39,27 @@ RedHat:
     - python-memcached
     - pysaml2
 
-Debian:
-  pip_pkg: python3-pip
-  pkgs_add:
-    - git
-    - bridge-utils
-    - apache2
-    - netcat
-    - python3-distutils
+Suse:
+  pkg:
+    name: devstack-suse
+
+Gentoo: {}
+
+Arch: {}
+
+Alpine: {}
 
 FreeBSD:
+  rootgroup: wheel
   pkgs_add:
     - git
+  pip_pkg: devel/py-pip
+
+OpenBSD:
+  rootgroup: wheel
+
+Solaris: {}
+
+Windows: {}
+
+MacOS: {}
