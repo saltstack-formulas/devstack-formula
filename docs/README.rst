@@ -83,8 +83,9 @@ Site/Release-specific Pillar Data::
         See `pillar.example`
 
 The Devstack installer makes drastic and dramatic changes to your Linux environment. Use a fresh Linux OS installation and avoid making assumptions - Devstack only supports MYSQL on 127.0.0.1:
-- https://bugs.launchpad.net/devstack/+bug/1735097
-- https://bugs.launchpad.net/devstack/+bug/1892531
+
+* https://bugs.launchpad.net/devstack/+bug/1735097
+* https://bugs.launchpad.net/devstack/+bug/1892531
 
 
 
@@ -103,8 +104,8 @@ This installs the devstack package,
 manages the devstack configuration file and then
 starts the associated devstack service.
 
-`devstack.user``
-----------------
+``devstack.user``
+-----------------
 
 Ensure `stack` user and group exists; included by ``devstack.install`` state.
 
