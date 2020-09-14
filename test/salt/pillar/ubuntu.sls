@@ -34,7 +34,7 @@ devstack:
   dir:
     tmp: /tmp/devstack  # not sure why centos wants this?
 
-  ### openstack cli ###
+  {# openstack cli #}
   cli:
 
     # User
@@ -54,7 +54,6 @@ devstack:
           options:
             domain: default
 
-    # Group
     group:
       create:
         service:
@@ -70,7 +69,6 @@ devstack:
           target:
             - admin
 
-    # Role based authentication
     role:
       add:
         admin:
@@ -84,7 +82,6 @@ devstack:
           group:
             - service
 
-    # Service
     service:
       create:
         keystonev0.2.0:
@@ -93,7 +90,6 @@ devstack:
             description: keystone Service
             enable: true
 
-    # Service Endpoint
     endpoint:
       create:
         keystonev0.2.0 public https://127.0.0.1/50040//v0.2.0/%\(tenant_id\)s:
@@ -109,7 +105,6 @@ devstack:
             region: RegionOne
             enable: true
 
-    # Delete some presupplied stuff
     project:
       delete:
         demo:
@@ -121,7 +116,6 @@ devstack:
         invisible_to_admin:
           options:
             domain: default
-
 
   tofs:
     # The files_switch key serves as a selector for alternative

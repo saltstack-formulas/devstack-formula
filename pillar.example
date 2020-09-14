@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: ft=yaml
 ---
-# SITE & RELEASE SPECIFIC DATA
+{# SITE & RELEASE SPECIFIC DATA #}
 
   {%- set enabled_services = 'mysql,key' %}
   {%- set yoursvc_name = 'keystone' %}
@@ -24,7 +24,7 @@
   {%- set db_host = '127.0.0.1' %}
   {# https://bugs.launchpad.net/devstack/+bug/1892531 #}
 
-# DATA DICTIONARY
+{# DATA DICTIONARY #}
 
 mysql:
   server:
@@ -59,10 +59,9 @@ devstack:
   dir:
     tmp: /tmp/devstack  {# not sure why centos wants this? #}
 
-  ### openstack cli ###
+  {# openstack cli #}
   cli:
 
-    # User
     user:
       create:
         {{ yoursvc_name }}:
@@ -79,7 +78,6 @@ devstack:
           options:
             domain: default
 
-    # Group
     group:
       create:
         service:
@@ -95,7 +93,6 @@ devstack:
           target:
             - {{ os_project_name }}
 
-    # Role based authentication
     role:
       add:
         admin:
@@ -109,7 +106,6 @@ devstack:
           group:
             - service
 
-    # Service
     service:
       create:
         {{ yoursvc_type }}:
@@ -118,7 +114,6 @@ devstack:
             description: {{ yoursvc_name }} Service
             enable: True
 
-    # Service Endpoint
     endpoint:
       create:
         {{ yoursvc_endpoint }} public https://{{ host }}/{{ port }}//{{ yoursvc_version }}/%\(tenant_id\)s:
@@ -134,7 +129,7 @@ devstack:
             region: {{ yoursvc_region }}
             enable: True
 
-    # Delete some presupplied stuff
+    {# Delete some presupplied stuff #}
     project:
       delete:
         demo:
