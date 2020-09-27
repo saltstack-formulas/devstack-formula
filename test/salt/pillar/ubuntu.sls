@@ -34,7 +34,7 @@ devstack:
   dir:
     tmp: /tmp/devstack  # not sure why centos wants this?
 
-  {# openstack cli #}
+  # openstack cli
   cli:
 
     # User
