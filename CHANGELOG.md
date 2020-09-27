@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.2](https://github.com/saltstack-formulas/devstack-formula/compare/v1.0.1...v1.0.2) (2020-09-27)
+
+
+### Documentation
+
+* **pillar.example:** tidyup comments ([97bf36e](https://github.com/saltstack-formulas/devstack-formula/commit/97bf36e7034f9d1322bc98143ebf3680d85983bb))
+
+
+### Styles
+
+* linting for `yamllint` ([7ba225d](https://github.com/saltstack-formulas/devstack-formula/commit/7ba225d6d7833012bddd432e2809fec6774b7b08))
+
 ## [1.0.1](https://github.com/saltstack-formulas/devstack-formula/compare/v1.0.0...v1.0.1) (2020-09-04)
 
 
