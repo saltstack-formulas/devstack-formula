@@ -8,9 +8,19 @@ driver:
   privileged: true
   run_command: /lib/systemd/systemd
 
-# Make sure the platforms listed below match up with
-# the `env.matrix` instances defined in `.travis.yml`
 platforms:
+
+  ## SALT `tiamat`
+  - name: ubuntu-2004-tiamat-py3
+    driver:
+      image: saltimages/salt-tiamat-py3:ubuntu-20.04
+  - name: ubuntu-1804-tiamat-py3
+    driver:
+      image: saltimages/salt-tiamat-py3:ubuntu-18.04
+  - name: ubuntu-1604-tiamat-py3
+    driver:
+      image: saltimages/salt-tiamat-py3:ubuntu-16.04
+
   ## SALT `master`
   - name: ubuntu-2004-master-py3
     driver:
@@ -18,25 +28,45 @@ platforms:
   - name: ubuntu-1804-master-py3
     driver:
       image: saltimages/salt-master-py3:ubuntu-18.04
+  - name: ubuntu-1604-master-py3
+    driver:
+      image: saltimages/salt-master-py3:ubuntu-16.04
 
-  ## SALT `3000.3`
-  - name: ubuntu-1804-3000-3-py3
+  ## SALT `3002.2`
+  - name: ubuntu-2004-3002-2-py3
     driver:
-      image: saltimages/salt-3000.3-py3:ubuntu-18.04
-  - name: ubuntu-1804-3000-3-py2
+      image: saltimages/salt-3002.2-py3:ubuntu-20.04
+  - name: ubuntu-1804-3002-2-py3
     driver:
-      image: saltimages/salt-3000.3-py2:ubuntu-18.04
-  - name: ubuntu-1604-3000-3-py2
+      image: saltimages/salt-3002.2-py3:ubuntu-18.04
+  - name: ubuntu-1604-3002-2-py3
     driver:
-      image: saltimages/salt-3000.3-py2:ubuntu-16.04
+      image: saltimages/salt-3002.2-py3:ubuntu-16.04
 
-  ## SALT `2019.2`
-  - name: ubuntu-1804-2019-2-py3
+  ## SALT `3001.4`
+  - name: ubuntu-2004-3001-4-py3
     driver:
-      image: saltimages/salt-2019.2-py3:ubuntu-18.04
-  - name: ubuntu-1604-2019-2-py3
+      image: saltimages/salt-3001.4-py3:ubuntu-20.04
+  - name: ubuntu-1804-3001-4-py3
     driver:
-      image: saltimages/salt-2019.2-py3:ubuntu-16.04
+      image: saltimages/salt-3001.4-py3:ubuntu-18.04
+  - name: ubuntu-1604-3001-4-py3
+    driver:
+      image: saltimages/salt-3001.4-py3:ubuntu-16.04
+
+  ## SALT `3000.6`
+  - name: ubuntu-1804-3000-6-py3
+    driver:
+      image: saltimages/salt-3000.6-py3:ubuntu-18.04
+  - name: ubuntu-1604-3000-6-py3
+    driver:
+      image: saltimages/salt-3000.6-py3:ubuntu-16.04
+  - name: ubuntu-1804-3000-6-py2
+    driver:
+      image: saltimages/salt-3000.6-py2:ubuntu-18.04
+  - name: ubuntu-1604-3000-6-py2
+    driver:
+      image: saltimages/salt-3000.6-py2:ubuntu-16.04
 
 provisioner:
   name: salt_solo
