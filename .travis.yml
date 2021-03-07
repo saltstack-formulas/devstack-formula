@@ -89,16 +89,16 @@ jobs:
     # - env: INSTANCE=ubuntu-ubuntu-2004-master-py3
     - env: INSTANCE=ubuntu-ubuntu-1804-master-py3
     # - env: INSTANCE=ubuntu-ubuntu-1604-master-py3
-    # - env: INSTANCE=ubuntu-ubuntu-2004-3002-2-py3
-    - env: INSTANCE=ubuntu-ubuntu-1804-3002-2-py3
-    # - env: INSTANCE=ubuntu-ubuntu-1604-3002-2-py3
-    # - env: INSTANCE=ubuntu-ubuntu-2004-3001-4-py3
-    - env: INSTANCE=ubuntu-ubuntu-1804-3001-4-py3
-    # - env: INSTANCE=ubuntu-ubuntu-1604-3001-4-py3
-    - env: INSTANCE=ubuntu-ubuntu-1804-3000-6-py3
-    # - env: INSTANCE=ubuntu-ubuntu-1604-3000-6-py3
-    - env: INSTANCE=ubuntu-ubuntu-1804-3000-6-py2
-    # - env: INSTANCE=ubuntu-ubuntu-1604-3000-6-py2
+    # - env: INSTANCE=ubuntu-ubuntu-2004-3002-5-py3
+    - env: INSTANCE=ubuntu-ubuntu-1804-3002-5-py3
+    # - env: INSTANCE=ubuntu-ubuntu-1604-3002-5-py3
+    # - env: INSTANCE=ubuntu-ubuntu-2004-3001-6-py3
+    - env: INSTANCE=ubuntu-ubuntu-1804-3001-6-py3
+    # - env: INSTANCE=ubuntu-ubuntu-1604-3001-6-py3
+    - env: INSTANCE=ubuntu-ubuntu-1804-3000-8-py3
+    # - env: INSTANCE=ubuntu-ubuntu-1604-3000-8-py3
+    - env: INSTANCE=ubuntu-ubuntu-1804-3000-8-py2
+    # - env: INSTANCE=ubuntu-ubuntu-1604-3000-8-py2
 
     ## Define the release stage that runs `semantic-release`
     - stage: 'release'
