@@ -92,6 +92,7 @@ suites:
       state_top:
         base:
           '*':
+            - devstack._mapdata
             - devstack
       pillars:
         top.sls:
