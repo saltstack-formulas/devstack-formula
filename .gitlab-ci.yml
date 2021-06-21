@@ -125,22 +125,16 @@ rubocop:
 # the `platforms` defined in `kitchen.yml`
 # ubuntu-ubuntu-2004-tiamat-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-tiamat-py3: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-tiamat-py3: {extends: '.test_instance'}
 # ubuntu-ubuntu-2004-master-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-master-py3: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-master-py3: {extends: '.test_instance'}
 # ubuntu-ubuntu-2004-3003-0-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-3003-0-py3: {extends: '.test_instance'}
 # ubuntu-ubuntu-2004-3002-6-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-3002-6-py3: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-3002-6-py3: {extends: '.test_instance'}
 # ubuntu-ubuntu-2004-3001-7-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-3001-7-py3: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-3001-7-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-3000-9-py3: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-3000-9-py3: {extends: '.test_instance'}
 ubuntu-ubuntu-1804-3000-9-py2: {extends: '.test_instance'}
-# ubuntu-ubuntu-1604-3000-9-py2: {extends: '.test_instance'}
 
 ###############################################################################
 # `release` stage: `semantic-release`

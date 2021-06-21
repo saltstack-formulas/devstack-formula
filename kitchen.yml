@@ -17,9 +17,6 @@ platforms:
   - name: ubuntu-1804-tiamat-py3
     driver:
       image: saltimages/salt-tiamat-py3:ubuntu-18.04
-  - name: ubuntu-1604-tiamat-py3
-    driver:
-      image: saltimages/salt-tiamat-py3:ubuntu-16.04
 
   ## SALT `master`
   - name: ubuntu-2004-master-py3
@@ -28,9 +25,6 @@ platforms:
   - name: ubuntu-1804-master-py3
     driver:
       image: saltimages/salt-master-py3:ubuntu-18.04
-  - name: ubuntu-1604-master-py3
-    driver:
-      image: saltimages/salt-master-py3:ubuntu-16.04
 
   ## SALT `3003.0`
   - name: ubuntu-2004-3003-0-py3
@@ -47,9 +41,6 @@ platforms:
   - name: ubuntu-1804-3002-6-py3
     driver:
       image: saltimages/salt-3002.6-py3:ubuntu-18.04
-  - name: ubuntu-1604-3002-6-py3
-    driver:
-      image: saltimages/salt-3002.6-py3:ubuntu-16.04
 
   ## SALT `3001.7`
   - name: ubuntu-2004-3001-7-py3
@@ -58,23 +49,14 @@ platforms:
   - name: ubuntu-1804-3001-7-py3
     driver:
       image: saltimages/salt-3001.7-py3:ubuntu-18.04
-  - name: ubuntu-1604-3001-7-py3
-    driver:
-      image: saltimages/salt-3001.7-py3:ubuntu-16.04
 
   ## SALT `3000.9`
   - name: ubuntu-1804-3000-9-py3
     driver:
       image: saltimages/salt-3000.9-py3:ubuntu-18.04
-  - name: ubuntu-1604-3000-9-py3
-    driver:
-      image: saltimages/salt-3000.9-py3:ubuntu-16.04
   - name: ubuntu-1804-3000-9-py2
     driver:
       image: saltimages/salt-3000.9-py2:ubuntu-18.04
-  - name: ubuntu-1604-3000-9-py2
-    driver:
-      image: saltimages/salt-3000.9-py2:ubuntu-16.04
 
 provisioner:
   name: salt_solo
