@@ -26,13 +26,13 @@ platforms:
     driver:
       image: saltimages/salt-master-py3:ubuntu-18.04
 
-  ## SALT `3003.0`
-  - name: ubuntu-2004-3003-0-py3
+  ## SALT `3003.1`
+  - name: ubuntu-2004-3003-1-py3
     driver:
-      image: saltimages/salt-3003.0-py3:ubuntu-20.04
-  - name: ubuntu-1804-3003-0-py3
+      image: saltimages/salt-3003.1-py3:ubuntu-20.04
+  - name: ubuntu-1804-3003-1-py3
     driver:
-      image: saltimages/salt-3003.0-py3:ubuntu-18.04
+      image: saltimages/salt-3003.1-py3:ubuntu-18.04
 
   ## SALT `3002.6`
   - name: ubuntu-2004-3002-6-py3
